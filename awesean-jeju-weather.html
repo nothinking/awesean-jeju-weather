@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>awesean-jeju-weather</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0e17;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
+    border-bottom: 2px solid #00b4d8;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 20px rgba(0,180,216,0.15);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: #00b4d8;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+  .header h1 span { color: #00b4d8; }
+  .header-right { display: flex; align-items: center; gap: 18px; font-size: 13px; color: #8899aa; }
+  .live-dot {
+    width: 8px; height: 8px; background: #ff4444; border-radius: 50%;
+    display: inline-block; animation: pulse 1.5s infinite; margin-right: 5px;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255,68,68,0.7); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(255,68,68,0); }
+  }
+  #clock { font-family: 'Courier New', monospace; font-size: 15px; color: #00b4d8; font-weight: bold; }
+
+  /* ── Tab Navigation ── */
+  .tab-nav {
+    background: #0d1b2a;
+    padding: 0 24px;
+    display: flex;
+    border-bottom: 1px solid #1a2a3a;
+    position: sticky; top: 56px; z-index: 99;
+  }
+  .tab-btn {
+    background: none; border: none; color: #667;
+    padding: 10px 20px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tab-btn:hover { color: #aab; }
+  .tab-btn.active { color: #00b4d8; border-bottom-color: #00b4d8; }
+  .tab-btn .tab-icon { font-size: 15px; }
+
+  /* ── Controls bar ── */
+  .controls {
+    background: #0d1b2a;
+    padding: 8px 24px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #1a2a3a;
+    flex-wrap: wrap;
+  }
+  .controls label { font-size: 11px; color: #8899aa; text-transform: uppercase; letter-spacing: 1px; }
+  .filter-btn {
+    background: #1a2a3a; border: 1px solid #2a3a4a; color: #ccc;
+    padding: 5px 12px; border-radius: 4px; font-size: 11px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: #00b4d8; color: #00b4d8; }
+  .filter-btn.active { background: #00b4d8; color: #fff; border-color: #00b4d8; }
+  .layout-btns { margin-left: auto; display: flex; gap: 5px; }
+  .layout-btn {
+    background: #1a2a3a; border: 1px solid #2a3a4a; color: #ccc;
+    padding: 5px 9px; border-radius: 4px; font-size: 11px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .layout-btn:hover { border-color: #00b4d8; color: #00b4d8; }
+  .layout-btn.active { background: #00b4d8; color: #fff; border-color: #00b4d8; }
+
+  /* ── Section panels ── */
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+
+  /* ── Weather Section ── */
+  .weather-section {
+    padding: 4px;
+    display: grid;
+    gap: 4px;
+  }
+  .weather-section.weather-layout-row {
+    grid-template-columns: 1fr 1fr 1fr;
+    height: calc(100vh - 100px);
+  }
+  .weather-section.weather-layout-focus {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: calc(100vh - 100px);
+  }
+  .weather-section.weather-layout-2x2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: calc(100vh - 100px);
+  }
+  .weather-section.weather-layout-stack {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    height: calc(100vh - 100px);
+  }
+  .weather-card {
+    background: #111a28;
+    border: 1px solid #1a2a3a;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .weather-card:hover { border-color: #00b4d8; }
+  .weather-card-label {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 100%);
+    padding: 10px 14px;
+    z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .weather-card-title {
+    font-size: 13px; font-weight: 700; color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .weather-card-title .w-icon { font-size: 16px; }
+  .weather-card-badge {
+    font-size: 10px; color: #ffd700;
+    background: rgba(255,215,0,0.12); padding: 2px 8px;
+    border-radius: 10px; border: 1px solid rgba(255,215,0,0.3);
+  }
+  .weather-card iframe {
+    width: 100%; height: 100%; border: none;
+  }
+
+  /* ── Combined view ── */
+  .combined-section {
+    display: grid;
+    gap: 4px;
+    padding: 4px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 40vh 1fr;
+    min-height: calc(100vh - 100px);
+  }
+  .combined-weather {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+  }
+
+  /* ── CCTV Grid ── */
+  .grid {
+    display: grid;
+    gap: 4px;
+    padding: 4px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .grid.layout-2x2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.layout-3x3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.layout-4x4 { grid-template-columns: repeat(4, 1fr); }
+
+  /* ── Camera Card ── */
+  .cam-card {
+    background: #111a28;
+    border: 1px solid #1a2a3a;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .cam-card:hover { border-color: #00b4d8; box-shadow: 0 0 15px rgba(0,180,216,0.2); }
+  .cam-card.expanded {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1000; border-radius: 0; border: none;
+  }
+  .cam-label {
+    position: absolute; top: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+    padding: 8px 10px; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cam-name { font-size: 12px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+  .cam-region {
+    font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  }
+  .cam-status {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+    padding: 8px 10px; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cam-live {
+    font-size: 10px; color: #ff4444; font-weight: bold;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .cam-live .dot { width: 6px; height: 6px; background: #ff4444; border-radius: 50%; animation: pulse 1.5s infinite; }
+  .cam-source { font-size: 9px; color: #667; }
+  .cam-expand-btn {
+    position: absolute; top: 8px; right: 8px; z-index: 20;
+    background: rgba(0,0,0,0.5); border: 1px solid #333; color: #fff;
+    width: 28px; height: 28px; border-radius: 4px; cursor: pointer;
+    display: none; align-items: center; justify-content: center; font-size: 14px;
+  }
+  .cam-card:hover .cam-expand-btn { display: flex; }
+  .cam-card.expanded .cam-expand-btn { display: flex; }
+  .cam-media {
+    width: 100%; height: 100%; min-height: 180px;
+    display: flex; align-items: center; justify-content: center; background: #0a0e17;
+  }
+  .cam-media img, .cam-media video { width: 100%; height: 100%; object-fit: cover; }
+  .cam-media .loading { color: #334; font-size: 12px; text-align: center; }
+  .cam-media .error-msg { color: #664444; font-size: 11px; text-align: center; padding: 10px; }
+
+  /* ── Fullscreen overlay ── */
+  .close-overlay {
+    position: fixed; top: 10px; right: 10px; z-index: 1001;
+    background: rgba(0,0,0,0.8); border: 1px solid #00b4d8; color: #fff;
+    padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;
+    display: none;
+  }
+  .close-overlay.visible { display: block; }
+
+  /* ── Weather controls ── */
+  .weather-controls {
+    background: #0d1b2a;
+    padding: 8px 24px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #1a2a3a;
+  }
+  .weather-controls label { font-size: 11px; color: #8899aa; text-transform: uppercase; letter-spacing: 1px; }
+  .wlayout-btn {
+    background: #1a2a3a; border: 1px solid #2a3a4a; color: #ccc;
+    padding: 5px 12px; border-radius: 4px; font-size: 11px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .wlayout-btn:hover { border-color: #ffd700; color: #ffd700; }
+  .wlayout-btn.active { background: #b8860b; color: #fff; border-color: #ffd700; }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-icon">🌊</div>
+    <h1><span>awesean</span>-jeju-weather</h1>
+  </div>
+  <div class="header-right">
+    <span><span class="live-dot"></span> LIVE</span>
+    <span id="clock"></span>
+    <span id="cam-count">16 카메라</span>
+  </div>
+</div>
+
+<!-- ═══ TAB NAVIGATION ═══ -->
+<div class="tab-nav">
+  <button class="tab-btn active" data-tab="combined">
+    <span class="tab-icon">📡</span> 통합 관제
+  </button>
+  <button class="tab-btn" data-tab="cctv">
+    <span class="tab-icon">📹</span> CCTV 전체
+  </button>
+  <button class="tab-btn" data-tab="weather">
+    <span class="tab-icon">🌤</span> 날씨 지도
+  </button>
+</div>
+
+<!-- ═══ COMBINED VIEW (default) ═══ -->
+<div class="section-panel active" id="panel-combined">
+  <div class="combined-section">
+    <div class="combined-weather">
+      <div class="weather-card">
+        <div class="weather-card-label">
+          <span class="weather-card-title"><span class="w-icon">🛰</span> 위성 영상</span>
+          <span class="weather-card-badge">Satellite</span>
+        </div>
+        <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=m/s&zoom=9&overlay=satellite&product=satellite&level=surface&lat=33.38&lon=126.55&message=true" loading="lazy"></iframe>
+      </div>
+      <div class="weather-card">
+        <div class="weather-card-label">
+          <span class="weather-card-title"><span class="w-icon">🌧</span> 강수량</span>
+          <span class="weather-card-badge">Rain</span>
+        </div>
+        <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=m/s&zoom=9&overlay=rain&product=ecmwf&level=surface&lat=33.38&lon=126.55&message=true" loading="lazy"></iframe>
+      </div>
+      <div class="weather-card">
+        <div class="weather-card-label">
+          <span class="weather-card-title"><span class="w-icon">💨</span> 바람</span>
+          <span class="weather-card-badge">Wind</span>
+        </div>
+        <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=m/s&zoom=9&overlay=wind&product=ecmwf&level=surface&lat=33.38&lon=126.55&message=true" loading="lazy"></iframe>
+      </div>
+    </div>
+    <!-- CCTV grid in combined view -->
+    <div class="grid layout-4x4" id="grid-combined" style="grid-column: 1 / -1;"></div>
+  </div>
+</div>
+
+<!-- ═══ CCTV ONLY VIEW ═══ -->
+<div class="section-panel" id="panel-cctv">
+  <div class="controls" id="cctv-controls">
+    <label>지역 필터:</label>
+    <button class="filter-btn active" data-region="all">전체</button>
+    <button class="filter-btn" data-region="제주 북부지역">북부</button>
+    <button class="filter-btn" data-region="제주 남부지역">남부</button>
+    <button class="filter-btn" data-region="제주 동부지역">동부</button>
+    <button class="filter-btn" data-region="제주 서부지역">서부</button>
+    <button class="filter-btn" data-region="한라산">한라산</button>
+    <div class="layout-btns">
+      <label style="margin-right:4px">레이아웃:</label>
+      <button class="layout-btn" data-layout="2x2">2×2</button>
+      <button class="layout-btn" data-layout="3x3">3×3</button>
+      <button class="layout-btn active" data-layout="4x4">4×4</button>
+    </div>
+  </div>
+  <div class="grid layout-4x4" id="grid-cctv" style="min-height:calc(100vh - 150px);"></div>
+</div>
+
+<!-- ═══ WEATHER ONLY VIEW ═══ -->
+<div class="section-panel" id="panel-weather">
+  <div class="weather-controls">
+    <label>레이아웃:</label>
+    <button class="wlayout-btn active" data-wlayout="row">가로 3분할</button>
+    <button class="wlayout-btn" data-wlayout="focus">메인+사이드</button>
+    <button class="wlayout-btn" data-wlayout="stack">세로 3분할</button>
+  </div>
+  <div class="weather-section weather-layout-row" id="weather-grid">
+    <div class="weather-card">
+      <div class="weather-card-label">
+        <span class="weather-card-title"><span class="w-icon">🛰</span> 위성 영상</span>
+        <span class="weather-card-badge">Satellite</span>
+      </div>
+      <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=m/s&zoom=9&overlay=satellite&product=satellite&level=surface&lat=33.38&lon=126.55&message=true" loading="lazy"></iframe>
+    </div>
+    <div class="weather-card">
+      <div class="weather-card-label">
+        <span class="weather-card-title"><span class="w-icon">🌧</span> 강수량</span>
+        <span class="weather-card-badge">Rain</span>
+      </div>
+      <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=m/s&zoom=9&overlay=rain&product=ecmwf&level=surface&lat=33.38&lon=126.55&message=true" loading="lazy"></iframe>
+    </div>
+    <div class="weather-card">
+      <div class="weather-card-label">
+        <span class="weather-card-title"><span class="w-icon">💨</span> 바람</span>
+        <span class="weather-card-badge">Wind</span>
+      </div>
+      <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=m/s&zoom=9&overlay=wind&product=ecmwf&level=surface&lat=33.38&lon=126.55&message=true" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+
+<button class="close-overlay" id="closeOverlay" onclick="closeExpanded()">✕ 닫기 (ESC)</button>
+
+<script>
+/* ═══ Camera Data ═══ */
+const cameras = [
+  { id:1, name:"용두암 해안", region:"제주 북부지역", type:"mjpg", url:"http://59.8.95.74:4001/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100003/0/1", source:"재난안전대책본부" },
+  { id:2, name:"탑동 해안", region:"제주 북부지역", type:"mjpg", url:"http://59.8.95.74:4002/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100001/0/1", source:"재난안전대책본부" },
+  { id:3, name:"서귀포 항", region:"제주 남부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/35", hls:"http://123.140.197.51/stream/35/play.m3u8", source:"" },
+  { id:4, name:"법환포구", region:"제주 남부지역", type:"mjpg", url:"http://59.8.95.74:4004/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100007/0/1", source:"재난안전대책본부" },
+  { id:5, name:"법환 해안", region:"제주 남부지역", type:"mjpg", url:"http://59.8.95.74:4005/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100008/0/1", source:"재난안전대책본부" },
+  { id:6, name:"중문 해안", region:"제주 남부지역", type:"mjpg", url:"http://59.8.95.74:4009/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100010/0/1", source:"재난안전대책본부" },
+  { id:7, name:"온평 해안", region:"제주 동부지역", type:"mjpg", url:"http://59.8.95.74:4006/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100009/0/1", source:"재난안전대책본부" },
+  { id:8, name:"신창 해안", region:"제주 서부지역", type:"mjpg", url:"http://59.8.95.74:4007/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100004/0/1", source:"재난안전대책본부" },
+  { id:9, name:"화순 해안", region:"제주 서부지역", type:"mjpg", url:"http://59.8.95.74:4008/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100005/0/1", source:"재난안전대책본부" },
+  { id:10, name:"백록담", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv01.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv01.stream_360p/playlist.m3u8", source:"한라산국립공원" },
+  { id:11, name:"왕관릉", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv02.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv02.stream_360p/playlist.m3u8", source:"한라산국립공원" },
+  { id:12, name:"윗세오름", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv03.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv03.stream_360p/playlist.m3u8", source:"한라산국립공원" },
+  { id:13, name:"어승생악", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv04.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv04.stream_360p/playlist.m3u8", source:"한라산국립공원" },
+  { id:14, name:"1100도로", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv05.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv05.stream_360p/playlist.m3u8", source:"한라산국립공원" },
+  { id:15, name:"제주공항", region:"제주 북부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/33", hls:"http://123.140.197.51/stream/33/play.m3u8", source:"" },
+  { id:16, name:"성산일출봉", region:"제주 동부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/34", hls:"http://123.140.197.51/stream/34/play.m3u8", source:"" }
+];
+
+const regionColors = {
+  "제주 북부지역": "#00b4d8",
+  "제주 남부지역": "#48bb78",
+  "제주 동부지역": "#ed8936",
+  "제주 서부지역": "#9f7aea",
+  "한라산": "#f56565"
+};
+
+let currentFilter = "all";
+let currentTab = "combined";
+let expandedCard = null;
+const hlsInstances = {};
+
+/* ═══ Clock ═══ */
+function updateClock() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('clock').textContent =
+    `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ═══ Tab switching ═══ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    currentTab = tab;
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+
+    // Destroy HLS instances before re-rendering
+    Object.keys(hlsInstances).forEach(k => {
+      try { hlsInstances[k].destroy(); } catch(e){}
+      delete hlsInstances[k];
+    });
+
+    if (tab === 'combined') renderCombinedCCTV();
+    else if (tab === 'cctv') renderCCTVGrid();
+  });
+});
+
+/* ═══ Render CCTV into a grid container ═══ */
+function renderCameras(gridEl, cameraList) {
+  gridEl.innerHTML = '';
+  cameraList.forEach(cam => {
+    const card = document.createElement('div');
+    card.className = 'cam-card';
+    card.id = 'cam-' + cam.id;
+    const color = regionColors[cam.region] || '#00b4d8';
+    card.innerHTML = `
+      <div class="cam-label">
+        <span class="cam-name">${cam.name}</span>
+        <span class="cam-region" style="color:${color};background:${color}22;border:1px solid ${color}44">${cam.region}</span>
+      </div>
+      <div class="cam-media" id="media-${cam.id}">
+        <div class="loading">연결 중...</div>
+      </div>
+      <div class="cam-status">
+        <span class="cam-live"><span class="dot"></span> LIVE</span>
+        <span class="cam-source">${cam.source}</span>
+      </div>
+      <button class="cam-expand-btn" onclick="event.stopPropagation(); toggleExpand(${cam.id})">⛶</button>
+    `;
+    card.addEventListener('dblclick', () => toggleExpand(cam.id));
+    gridEl.appendChild(card);
+    setTimeout(() => loadStream(cam), 100);
+  });
+}
+
+function renderCombinedCCTV() {
+  const grid = document.getElementById('grid-combined');
+  renderCameras(grid, cameras);
+  document.getElementById('cam-count').textContent = cameras.length + ' 카메라';
+}
+
+function renderCCTVGrid() {
+  const grid = document.getElementById('grid-cctv');
+  const filtered = currentFilter === 'all' ? cameras : cameras.filter(c => c.region === currentFilter);
+  renderCameras(grid, filtered);
+  document.getElementById('cam-count').textContent = filtered.length + ' 카메라';
+}
+
+/* ═══ Stream loading ═══ */
+function loadStream(cam) {
+  const container = document.getElementById('media-' + cam.id);
+  if (!container) return;
+  if (cam.type === 'mjpg') {
+    const img = document.createElement('img');
+    img.src = cam.url;
+    img.alt = cam.name;
+    img.onerror = () => { if (cam.hls) loadHLS(cam, container); else container.innerHTML = `<div class="error-msg">연결 실패<br><small>${cam.name}</small></div>`; };
+    container.innerHTML = '';
+    container.appendChild(img);
+  } else {
+    loadHLS(cam, container);
+  }
+}
+
+function loadHLS(cam, container) {
+  const video = document.createElement('video');
+  video.muted = true; video.autoplay = true; video.playsInline = true;
+  const hlsUrl = cam.hls || cam.url;
+
+  if (Hls.isSupported()) {
+    const hls = new Hls({ enableWorker: true, lowLatencyMode: true, maxBufferLength: 10, maxMaxBufferLength: 30 });
+    hls.loadSource(hlsUrl);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+    hls.on(Hls.Events.ERROR, (event, data) => {
+      if (data.fatal) {
+        if (hlsUrl === cam.hls && cam.url !== cam.hls) {
+          hls.destroy();
+          const hls2 = new Hls({ enableWorker: true });
+          hls2.loadSource(cam.url); hls2.attachMedia(video);
+          hls2.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+          hls2.on(Hls.Events.ERROR, () => { container.innerHTML = `<div class="error-msg">연결 실패<br><small>${cam.name}</small></div>`; });
+          hlsInstances[cam.id] = hls2;
+        } else if (cam.url.includes('axis-cgi')) {
+          const img = document.createElement('img'); img.src = cam.url; img.alt = cam.name;
+          container.innerHTML = ''; container.appendChild(img);
+        } else {
+          container.innerHTML = `<div class="error-msg">연결 실패<br><small>${cam.name}</small></div>`;
+        }
+      }
+    });
+    hlsInstances[cam.id] = hls;
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = hlsUrl;
+    video.addEventListener('loadedmetadata', () => video.play().catch(() => {}));
+  } else {
+    container.innerHTML = `<div class="error-msg">HLS 미지원<br><small>${cam.name}</small></div>`;
+    return;
+  }
+  container.innerHTML = '';
+  container.appendChild(video);
+}
+
+/* ═══ Expand/collapse ═══ */
+function toggleExpand(camId) {
+  const card = document.getElementById('cam-' + camId);
+  if (!card) return;
+  if (card.classList.contains('expanded')) { closeExpanded(); }
+  else {
+    if (expandedCard) closeExpanded();
+    card.classList.add('expanded'); expandedCard = card;
+    document.getElementById('closeOverlay').classList.add('visible');
+  }
+}
+function closeExpanded() {
+  if (expandedCard) { expandedCard.classList.remove('expanded'); expandedCard = null; }
+  document.getElementById('closeOverlay').classList.remove('visible');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeExpanded(); });
+
+/* ═══ CCTV filter buttons ═══ */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.region;
+    Object.keys(hlsInstances).forEach(k => { try { hlsInstances[k].destroy(); } catch(e){} delete hlsInstances[k]; });
+    renderCCTVGrid();
+  });
+});
+
+/* ═══ CCTV layout buttons ═══ */
+document.querySelectorAll('.layout-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const g = document.getElementById('grid-cctv');
+    g.className = 'grid layout-' + btn.dataset.layout;
+    g.style.minHeight = 'calc(100vh - 150px)';
+  });
+});
+
+/* ═══ Weather layout buttons ═══ */
+document.querySelectorAll('.wlayout-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.wlayout-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const g = document.getElementById('weather-grid');
+    g.className = 'weather-section weather-layout-' + btn.dataset.wlayout;
+  });
+});
+
+/* ═══ Init ═══ */
+renderCombinedCCTV();
+</script>
+</body>
+</html>
