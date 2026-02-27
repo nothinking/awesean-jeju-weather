@@ -17,24 +17,24 @@
   /* ── Header ── */
   .header {
     background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
-    border-bottom: 2px solid #00b4d8;
+    border-bottom: 2px solid #f59e0b;
     padding: 10px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 2px 20px rgba(0,180,216,0.15);
+    box-shadow: 0 2px 20px rgba(245,158,11,0.15);
     position: sticky; top: 0; z-index: 100;
   }
   .header-left { display: flex; align-items: center; gap: 14px; }
   .header-icon {
     width: 36px; height: 36px;
-    background: #00b4d8;
+    background: #f59e0b;
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     font-size: 18px;
   }
   .header h1 { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 1px; }
-  .header h1 span { color: #00b4d8; }
+  .header h1 span { color: #f59e0b; }
   .header-right { display: flex; align-items: center; gap: 18px; font-size: 13px; color: #8899aa; }
   .live-dot {
     width: 8px; height: 8px; background: #ff4444; border-radius: 50%;
@@ -44,7 +44,7 @@
     0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255,68,68,0.7); }
     50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(255,68,68,0); }
   }
-  #clock { font-family: 'Courier New', monospace; font-size: 15px; color: #00b4d8; font-weight: bold; }
+  #clock { font-family: 'Courier New', monospace; font-size: 15px; color: #f59e0b; font-weight: bold; }
 
   /* ── Tab Navigation (모바일 전용) ── */
   .tab-nav {
@@ -63,7 +63,7 @@
     display: flex; align-items: center; gap: 6px;
   }
   .tab-btn:hover { color: #aab; }
-  .tab-btn.active { color: #00b4d8; border-bottom-color: #00b4d8; }
+  .tab-btn.active { color: #f59e0b; border-bottom-color: #f59e0b; }
   .tab-btn .tab-icon { font-size: 15px; }
 
   /* ── Compass Filter ── */
@@ -76,7 +76,7 @@
     background: rgba(10,14,23,0.92);
     border: 2px solid #1a2a3a;
     backdrop-filter: blur(12px);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,180,216,0.05);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.6), inset 0 0 30px rgba(245,158,11,0.05);
     position: relative;
   }
   /* Tick marks */
@@ -97,29 +97,63 @@
     white-space: nowrap; letter-spacing: 0.5px;
     transform: translate(-50%, -50%);
   }
-  .filter-btn:hover { color: #00b4d8; text-shadow: 0 0 8px rgba(0,180,216,0.5); }
-  .filter-btn.active { color: #00e5ff; text-shadow: 0 0 12px rgba(0,180,216,0.7); font-weight: 800; }
+  .filter-btn:hover { color: #f59e0b; text-shadow: 0 0 8px rgba(245,158,11,0.5); }
+  .filter-btn.active { color: #fcd34d; text-shadow: 0 0 12px rgba(245,158,11,0.7); font-weight: 800; }
   /* Center button */
   .filter-btn[data-region="all"] {
     top: 50%; left: 50%; font-size: 12px;
-    background: rgba(0,180,216,0.08); border-radius: 50%;
+    background: rgba(245,158,11,0.08); border-radius: 50%;
     width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
     padding: 0;
   }
   .filter-btn[data-region="all"].active {
-    background: rgba(0,180,216,0.25);
-    box-shadow: 0 0 15px rgba(0,180,216,0.3);
+    background: rgba(245,158,11,0.25);
+    box-shadow: 0 0 15px rgba(245,158,11,0.3);
   }
   /* Cardinal positions */
   .filter-btn[data-region="제주 북부지역"] { top: 12%; left: 50%; }
   .filter-btn[data-region="제주 남부지역"] { top: 88%; left: 50%; }
   .filter-btn[data-region="제주 서부지역"] { top: 50%; left: 12%; }
   .filter-btn[data-region="제주 동부지역"] { top: 50%; left: 88%; }
-  /* Outside positions */
-  .filter-btn[data-region="한라산"] { top: -8%; left: 8%; font-size: 22px; }
-  .filter-btn[data-region="해수욕장"] { top: -8%; left: 92%; font-size: 22px; }
-  .filter-btn[data-region="한라산"].active,
-  .filter-btn[data-region="해수욕장"].active { transform: translate(-50%, -50%) scale(1.2); }
+  /* Seesaw switch outside ring */
+  .seesaw-wrap {
+    position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+  }
+  .seesaw {
+    width: 80px; height: 26px; position: relative;
+    perspective: 120px;
+  }
+  .seesaw-board {
+    width: 100%; height: 100%; display: flex;
+    border-radius: 13px; overflow: hidden;
+    background: #1a2a3a; border: 1px solid #2a3a4a;
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: rotateX(0deg);
+  }
+  .seesaw.tilt-left .seesaw-board { transform: rotateX(8deg); }
+  .seesaw.tilt-right .seesaw-board { transform: rotateX(-8deg); }
+  .seesaw-side {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; transition: all 0.3s;
+    background: transparent; border: none; padding: 0;
+    color: #556; position: relative;
+  }
+  .seesaw-side:first-child { border-right: 1px solid #2a3a4a; }
+  .seesaw-side:hover { background: rgba(245,158,11,0.06); }
+  .seesaw.tilt-left .seesaw-side:first-child,
+  .seesaw.tilt-right .seesaw-side:last-child {
+    background: rgba(245,158,11,0.15);
+  }
+  /* Pivot dot */
+  .seesaw::after {
+    content: ''; position: absolute; bottom: -5px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-bottom: 5px solid #2a3a4a;
+    rotate: 180deg;
+  }
 
   /* ── Floating Lever Panel ── */
   .lever-panel {
@@ -127,8 +161,8 @@
     z-index: 900; display: flex; flex-direction: column; align-items: center; gap: 0;
   }
   .lever-label {
-    font-size: 16px; font-weight: 800; color: #00b4d8; margin-bottom: 4px;
-    text-shadow: 0 0 10px rgba(0,180,216,0.5);
+    font-size: 16px; font-weight: 800; color: #f59e0b; margin-bottom: 4px;
+    text-shadow: 0 0 10px rgba(245,158,11,0.5);
     letter-spacing: 1px;
   }
   .lever-track {
@@ -144,14 +178,14 @@
   }
   .lever-knob {
     position: absolute; top: 50%; left: 50%; width: 32px; height: 32px;
-    background: radial-gradient(circle at 40% 35%, #00d4ff, #0088aa);
-    border: 2px solid #00e5ff; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #fbbf24, #d97706);
+    border: 2px solid #fcd34d; border-radius: 50%;
     transform: translate(-50%, -50%); cursor: grab;
-    box-shadow: 0 0 12px rgba(0,180,216,0.4);
+    box-shadow: 0 0 12px rgba(245,158,11,0.4);
     transition: left 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 2;
   }
-  .lever-knob.active { transition: none; box-shadow: 0 0 20px rgba(0,180,216,0.7); }
+  .lever-knob.active { transition: none; box-shadow: 0 0 20px rgba(245,158,11,0.7); }
 
   /* ── Weather Section ── */
   .weather-area {
@@ -174,7 +208,7 @@
     position: relative;
     transition: border-color 0.2s;
   }
-  .weather-card:hover { border-color: #00b4d8; }
+  .weather-card:hover { border-color: #f59e0b; }
   .weather-card-label {
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -218,10 +252,10 @@
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .cam-card:hover { border-color: #00b4d8; box-shadow: 0 0 15px rgba(0,180,216,0.2); }
+  .cam-card:hover { border-color: #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,0.2); }
   .cam-card.featured {
     grid-column: span 2; grid-row: span 2;
-    border-color: #00b4d8; box-shadow: 0 0 20px rgba(0,180,216,0.3);
+    border-color: #f59e0b; box-shadow: 0 0 20px rgba(245,158,11,0.3);
   }
   .cam-card.featured .cam-media { aspect-ratio: 16/9; }
   .cam-card.featured .cam-name { font-size: 15px; }
@@ -268,10 +302,19 @@
 
   /* ── Fullscreen overlay ── */
   .close-overlay {
-    position: fixed; top: 10px; right: 10px; z-index: 1001;
-    background: rgba(0,0,0,0.8); border: 1px solid #00b4d8; color: #fff;
-    padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;
-    display: none;
+    position: fixed; bottom: 20px; right: 16px; z-index: 1001;
+    background: rgba(10,14,23,0.85); color: #f59e0b;
+    border: 1px solid #f59e0b; border-left: 3px solid #fbbf24;
+    padding: 10px 20px; cursor: pointer; font-size: 13px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+    display: none; transition: all 0.2s;
+    text-shadow: 0 0 8px rgba(245,158,11,0.5);
+    box-shadow: 0 0 15px rgba(245,158,11,0.2);
+  }
+  .close-overlay:hover {
+    background: rgba(245,158,11,0.15); text-shadow: 0 0 15px rgba(245,158,11,0.8);
+    box-shadow: 0 0 25px rgba(245,158,11,0.4);
   }
   .close-overlay.visible { display: block; }
   .cam-card.expanded .cam-media { cursor: grab; overflow: hidden; aspect-ratio: auto; height: 100%; }
@@ -279,17 +322,30 @@
   /* ── Zoom controls ── */
   .zoom-controls {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 1001; display: none; gap: 8px; align-items: center;
-    background: rgba(0,0,0,0.8); border: 1px solid #334; border-radius: 8px; padding: 6px 12px;
+    z-index: 1001; display: none; gap: 6px; align-items: center;
+    background: rgba(10,14,23,0.9);
+    border: 1px solid rgba(245,158,11,0.3); border-radius: 0;
+    clip-path: polygon(4% 0, 96% 0, 100% 100%, 0 100%);
+    padding: 8px 20px;
+    box-shadow: 0 0 20px rgba(245,158,11,0.15), inset 0 0 15px rgba(245,158,11,0.03);
   }
   .zoom-controls.visible { display: flex; }
   .zoom-btn {
-    background: rgba(0,180,216,0.2); border: 1px solid #00b4d8; color: #fff;
-    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px;
-    display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b;
+    width: 38px; height: 38px; border-radius: 2px; cursor: pointer; font-size: 20px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
   }
-  .zoom-btn:hover { background: rgba(0,180,216,0.5); }
-  .zoom-level { color: #aaa; font-size: 12px; min-width: 40px; text-align: center; }
+  .zoom-btn:hover {
+    background: rgba(245,158,11,0.2); color: #fcd34d;
+    box-shadow: 0 0 12px rgba(245,158,11,0.4);
+    text-shadow: 0 0 8px rgba(245,158,11,0.6);
+  }
+  .zoom-level {
+    color: #f59e0b; font-size: 13px; font-weight: 700; min-width: 44px; text-align: center;
+    font-family: 'Courier New', monospace; letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(245,158,11,0.3);
+  }
 
   /* ═══════════════════════════════════════
      MOBILE RESPONSIVE (max-width: 768px)
@@ -431,12 +487,18 @@
     <button class="filter-btn" data-region="제주 남부지역">남부</button>
     <button class="filter-btn" data-region="제주 동부지역">동부</button>
     <button class="filter-btn" data-region="제주 서부지역">서부</button>
-    <button class="filter-btn" data-region="한라산">🏔</button>
-    <button class="filter-btn" data-region="해수욕장">🏖</button>
+  </div>
+  <div class="seesaw-wrap">
+    <div class="seesaw" id="seesawCtrl">
+      <div class="seesaw-board">
+        <button class="seesaw-side" data-region="한라산">🏔</button>
+        <button class="seesaw-side" data-region="해수욕장">🏖</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<button class="close-overlay" id="closeOverlay" onclick="closeExpanded()">✕ 닫기 (ESC)</button>
+<button class="close-overlay" id="closeOverlay" onclick="closeExpanded()">✕ CLOSE</button>
 
 <!-- Floating Lever Panel -->
 <div class="lever-panel" id="leverPanel">
@@ -451,7 +513,7 @@
   <button class="zoom-btn" onclick="zoomAction('out')">−</button>
   <span class="zoom-level" id="zoomLevel">1.0x</span>
   <button class="zoom-btn" onclick="zoomAction('in')">+</button>
-  <button class="zoom-btn" onclick="zoomAction('reset')" style="font-size:12px;width:auto;padding:0 12px;border-radius:4px;">리셋</button>
+  <button class="zoom-btn" onclick="zoomAction('reset')" style="font-size:11px;width:auto;padding:0 14px;letter-spacing:2px;">RST</button>
 </div>
 
 <script>
@@ -488,11 +550,11 @@ const cameras = [
 ];
 
 const regionColors = {
-  "제주 북부지역": "#00b4d8",
+  "제주 북부지역": "#fbbf24",
   "제주 남부지역": "#48bb78",
-  "제주 동부지역": "#ed8936",
-  "제주 서부지역": "#9f7aea",
-  "한라산": "#f56565"
+  "제주 동부지역": "#fb923c",
+  "제주 서부지역": "#c084fc",
+  "한라산": "#f87171"
 };
 
 let currentFilter = "all";
@@ -529,7 +591,7 @@ function renderCameras(gridEl, cameraList) {
     const card = document.createElement('div');
     card.className = 'cam-card';
     card.id = 'cam-' + cam.id;
-    const color = regionColors[cam.region] || '#00b4d8';
+    const color = regionColors[cam.region] || '#f59e0b';
     card.innerHTML = `
       <div class="cam-label">
         <span class="cam-name">${cam.name}</span>
@@ -746,13 +808,38 @@ function setupZoomListeners(card) {
 }
 
 /* ═══ CCTV filter buttons ═══ */
+function activateFilter(region) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  const seesaw = document.getElementById('seesawCtrl');
+  if (region === '한라산' || region === '해수욕장') {
+    /* seesaw tilt handled by click handler */
+  } else {
+    seesaw.classList.remove('tilt-left', 'tilt-right');
+    const btn = document.querySelector(`.filter-btn[data-region="${region}"]`);
+    if (btn) btn.classList.add('active');
+  }
+  currentFilter = region;
+  Object.keys(hlsInstances).forEach(k => { try { hlsInstances[k].destroy(); } catch(e){} delete hlsInstances[k]; });
+  renderCCTV();
+}
 document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => activateFilter(btn.dataset.region));
+});
+document.querySelectorAll('.seesaw-side').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentFilter = btn.dataset.region;
-    Object.keys(hlsInstances).forEach(k => { try { hlsInstances[k].destroy(); } catch(e){} delete hlsInstances[k]; });
-    renderCCTV();
+    const seesaw = document.getElementById('seesawCtrl');
+    const region = btn.dataset.region;
+    const isLeft = region === '한라산';
+    const tiltClass = isLeft ? 'tilt-left' : 'tilt-right';
+    /* Toggle: if already tilted this way, reset */
+    if (seesaw.classList.contains(tiltClass)) {
+      seesaw.classList.remove('tilt-left', 'tilt-right');
+      activateFilter('all');
+    } else {
+      seesaw.classList.remove('tilt-left', 'tilt-right');
+      seesaw.classList.add(tiltClass);
+      activateFilter(region);
+    }
   });
 });
 
