@@ -278,8 +278,11 @@
     font-size: var(--cam-region-size, 10px); padding: 2px 8px; border-radius: 10px; transition: font-size 0.2s;
   }
   .hide-region .cam-region { display: none; }
-  .hide-label .cam-label { padding: 4px 6px; }
-  .hide-label .cam-name { font-size: 8px; }
+  .hide-label .cam-label { display: none; }
+  .cam-card.card-tiny .cam-label { display: none; }
+  .cam-card.card-small .cam-region { display: none; }
+  .cam-card.card-small .cam-name { font-size: 9px; }
+  .cam-card.card-small .cam-label { padding: 4px 6px; }
   .cam-status {
     position: absolute; bottom: 0; left: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);
@@ -635,6 +638,7 @@ function renderCCTV() {
   const filtered = currentFilter === 'all' ? cameras : currentFilter === '해수욕장' ? cameras.filter(c => c.source === '해수욕장') : cameras.filter(c => c.region === currentFilter);
   renderCameras(grid, filtered);
   document.getElementById('cam-count').textContent = filtered.length + ' 카메라';
+  if (typeof observeCards === 'function') observeCards();
 }
 
 /* ═══ Stream loading ═══ */
@@ -927,7 +931,6 @@ function setColumns(n) {
   grid.style.setProperty('--cam-region-size', regionS + 'px');
   grid.style.setProperty('--cam-label-pad', (padS > 0 ? padS : 4) + 'px');
   grid.classList.toggle('hide-region', regionS === 0);
-  grid.classList.toggle('hide-label', nameS <= 8 && currentCols >= 6);
 }
 
 (function() {
@@ -989,9 +992,22 @@ function setColumns(n) {
   });
 })();
 
+/* ═══ Card size observer: hide text on tiny cards ═══ */
+const cardObserver = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const w = entry.contentRect.width;
+    entry.target.classList.toggle('card-tiny', w < 100);
+    entry.target.classList.toggle('card-small', w >= 100 && w < 160);
+  }
+});
+function observeCards() {
+  document.querySelectorAll('.cam-card').forEach(c => cardObserver.observe(c));
+}
+
 /* ═══ Init ═══ */
 setColumns(currentCols);
 renderCCTV();
+observeCards();
 </script>
 </body>
 </html>
