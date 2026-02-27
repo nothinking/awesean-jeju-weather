@@ -256,6 +256,103 @@
   }
   .wlayout-btn:hover { border-color: #ffd700; color: #ffd700; }
   .wlayout-btn.active { background: #b8860b; color: #fff; border-color: #ffd700; }
+
+  /* ═══════════════════════════════════════
+     MOBILE RESPONSIVE (max-width: 768px)
+     ═══════════════════════════════════════ */
+  @media (max-width: 768px) {
+    /* ── Header ── */
+    .header { padding: 8px 12px; }
+    .header-icon { width: 30px; height: 30px; font-size: 15px; }
+    .header h1 { font-size: 14px; letter-spacing: 0; }
+    .header-left { gap: 8px; }
+    .header-right { gap: 10px; font-size: 11px; }
+    #clock { font-size: 12px; }
+    #cam-count { display: none; }
+
+    /* ── Tabs ── */
+    .tab-nav { padding: 0 8px; top: 46px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tab-btn { padding: 8px 12px; font-size: 12px; gap: 4px; white-space: nowrap; }
+    .tab-btn .tab-icon { font-size: 13px; }
+    .tab-btn .tab-label { display: none; }
+
+    /* ── Controls ── */
+    .controls { padding: 6px 10px; gap: 6px; }
+    .controls label { font-size: 10px; }
+    .filter-btn { padding: 5px 8px; font-size: 10px; }
+    .layout-btns { margin-left: 0; margin-top: 4px; width: 100%; }
+    .layout-btn { padding: 5px 8px; font-size: 10px; }
+
+    /* ── Weather controls ── */
+    .weather-controls { padding: 6px 10px; gap: 6px; flex-wrap: wrap; }
+    .wlayout-btn { padding: 5px 8px; font-size: 10px; }
+
+    /* ── Combined view ── */
+    .combined-section {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+    .combined-weather {
+      grid-template-columns: 1fr;
+      grid-template-rows: 200px 200px 200px;
+    }
+
+    /* ── Weather section ── */
+    .weather-section.weather-layout-row,
+    .weather-section.weather-layout-focus,
+    .weather-section.weather-layout-2x2,
+    .weather-section.weather-layout-stack {
+      grid-template-columns: 1fr;
+      grid-template-rows: 250px 250px 250px;
+      height: auto;
+    }
+    .weather-section.weather-layout-focus .weather-card:first-child {
+      grid-row: auto;
+    }
+
+    /* ── CCTV Grid: 모바일은 1열 기본 ── */
+    .grid,
+    .grid.layout-2x2,
+    .grid.layout-3x3,
+    .grid.layout-4x4 {
+      grid-template-columns: 1fr;
+    }
+
+    /* ── Camera card ── */
+    .cam-media { min-height: 220px; }
+    .cam-expand-btn { display: flex; width: 36px; height: 36px; font-size: 18px; }
+    .cam-label { padding: 10px 12px; }
+    .cam-name { font-size: 13px; }
+    .cam-region { font-size: 11px; padding: 3px 10px; }
+    .cam-status { padding: 10px 12px; }
+    .cam-live { font-size: 11px; }
+    .cam-source { font-size: 10px; }
+
+    /* ── Fullscreen close button ── */
+    .close-overlay { padding: 10px 20px; font-size: 16px; }
+  }
+
+  /* ═══════════════════════════════════════
+     TABLET RESPONSIVE (max-width: 1024px)
+     ═══════════════════════════════════════ */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .combined-weather { grid-template-columns: 1fr 1fr 1fr; }
+    .grid.layout-4x4 { grid-template-columns: repeat(3, 1fr); }
+    .grid.layout-3x3 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ═══════════════════════════════════════
+     SMALL MOBILE (max-width: 480px)
+     ═══════════════════════════════════════ */
+  @media (max-width: 480px) {
+    .header h1 { font-size: 13px; }
+    .header-icon { width: 28px; height: 28px; font-size: 14px; border-radius: 6px; }
+    .header-right > span:not(:first-child):not(#clock) { display: none; }
+    .tab-btn { padding: 7px 10px; font-size: 11px; }
+    .combined-weather { grid-template-rows: 180px 180px 180px; }
+    .cam-media { min-height: 200px; }
+    .filter-btn { padding: 4px 7px; font-size: 9px; }
+  }
 </style>
 </head>
 <body>
@@ -460,6 +557,13 @@ function renderCameras(gridEl, cameraList) {
       <button class="cam-expand-btn" onclick="event.stopPropagation(); toggleExpand(${cam.id})">⛶</button>
     `;
     card.addEventListener('dblclick', () => toggleExpand(cam.id));
+    // Mobile: single tap to expand
+    let tapTimeout;
+    card.addEventListener('touchend', (e) => {
+      if (e.target.closest('.cam-expand-btn')) return;
+      if (tapTimeout) { clearTimeout(tapTimeout); tapTimeout = null; toggleExpand(cam.id); }
+      else { tapTimeout = setTimeout(() => { tapTimeout = null; }, 300); }
+    });
     gridEl.appendChild(card);
     setTimeout(() => loadStream(cam), 100);
   });
@@ -582,8 +686,23 @@ document.querySelectorAll('.wlayout-btn').forEach(btn => {
   });
 });
 
+/* ═══ Mobile: auto-set 2x2 layout on small screens ═══ */
+function applyMobileDefaults() {
+  if (window.innerWidth <= 768) {
+    document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+    const btn2x2 = document.querySelector('.layout-btn[data-layout="2x2"]');
+    if (btn2x2) btn2x2.classList.add('active');
+    const gridCctv = document.getElementById('grid-cctv');
+    if (gridCctv) { gridCctv.className = 'grid layout-2x2'; }
+    const gridCombined = document.getElementById('grid-combined');
+    if (gridCombined) { gridCombined.className = 'grid layout-2x2'; gridCombined.style.gridColumn = '1 / -1'; }
+  }
+}
+
 /* ═══ Init ═══ */
 renderCombinedCCTV();
+applyMobileDefaults();
+window.addEventListener('resize', applyMobileDefaults);
 </script>
 </body>
 </html>
