@@ -145,6 +145,7 @@
     grid-template-columns: repeat(4, 1fr);
   }
   .grid.layout-1x1 { grid-template-columns: 1fr; }
+  .grid.layout-1x1 .cam-card.featured { grid-column: span 1; }
   .grid.layout-2x2 { grid-template-columns: repeat(2, 1fr); }
   .grid.layout-3x3 { grid-template-columns: repeat(3, 1fr); }
   .grid.layout-4x4 { grid-template-columns: repeat(4, 1fr); }
@@ -160,6 +161,14 @@
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .cam-card:hover { border-color: #00b4d8; box-shadow: 0 0 15px rgba(0,180,216,0.2); }
+  .cam-card.featured {
+    grid-column: span 2; grid-row: span 2;
+    border-color: #00b4d8; box-shadow: 0 0 20px rgba(0,180,216,0.3);
+  }
+  .cam-card.featured .cam-media { min-height: 360px; }
+  .cam-card.featured .cam-name { font-size: 15px; }
+  .cam-card.featured .cam-media img,
+  .cam-card.featured .cam-media video { object-fit: contain; }
   .cam-card.expanded {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     z-index: 1000; border-radius: 0; border: none;
@@ -265,6 +274,9 @@
 
     /* ── Camera card (기본 모바일) ── */
     .cam-media { min-height: 220px; }
+    .cam-card.featured { grid-column: span 2; grid-row: span 2; }
+    .cam-card.featured .cam-media { min-height: 280px; }
+    .grid.layout-1x1 .cam-card.featured { grid-column: span 1; }
 
     /* ── CCTV Grid: 모바일에서도 선택한 레이아웃 유지 ── */
     .grid { grid-template-columns: 1fr; }
@@ -491,8 +503,17 @@ function renderCameras(gridEl, cameraList) {
         <span class="cam-source">${cam.source}</span>
       </div>
     `;
-    card.addEventListener('dblclick', () => toggleExpand(cam.id));
-    // Mobile: double-tap to expand
+    let clickTimer = null;
+    card.addEventListener('click', (e) => {
+      if (card.classList.contains('expanded')) return;
+      if (clickTimer) return;
+      clickTimer = setTimeout(() => { clickTimer = null; toggleFeatured(cam.id); }, 250);
+    });
+    card.addEventListener('dblclick', (e) => {
+      if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+      e.preventDefault(); toggleExpand(cam.id);
+    });
+    // Mobile: double-tap to fullscreen, single-tap to featured
     let tapTimeout;
     card.addEventListener('touchend', (e) => {
       if (tapTimeout) { clearTimeout(tapTimeout); tapTimeout = null; e.preventDefault(); toggleExpand(cam.id); }
@@ -563,6 +584,22 @@ function loadHLS(cam, container) {
   }
   container.innerHTML = '';
   container.appendChild(video);
+}
+
+/* ═══ Featured (main video in grid) ═══ */
+let featuredCard = null;
+function toggleFeatured(camId) {
+  const card = document.getElementById('cam-' + camId);
+  if (!card) return;
+  if (card.classList.contains('featured')) {
+    card.classList.remove('featured');
+    featuredCard = null;
+  } else {
+    if (featuredCard) featuredCard.classList.remove('featured');
+    card.classList.add('featured');
+    featuredCard = card;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 /* ═══ Expand/collapse + Zoom ═══ */
