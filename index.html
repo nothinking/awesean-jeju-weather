@@ -493,7 +493,7 @@ function renderCameras(gridEl, cameraList) {
     card.innerHTML = `
       <div class="cam-label">
         <span class="cam-name">${cam.name}</span>
-        <span class="cam-region" style="color:${color};background:${color}22;border:1px solid ${color}44">${cam.region}</span>
+        <span class="cam-region" style="color:${color};background:${color}22;border:1px solid ${color}44">${cam.region.replace(/제주\s*/,'').replace(/지역/,'')}</span>
       </div>
       <div class="cam-media" id="media-${cam.id}">
         <div class="loading">연결 중...</div>
