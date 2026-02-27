@@ -82,14 +82,45 @@
   }
   .filter-btn:hover { border-color: #00b4d8; color: #00b4d8; }
   .filter-btn.active { background: #00b4d8; color: #fff; border-color: #00b4d8; }
-  .layout-btns { margin-left: auto; display: flex; gap: 5px; align-items: center; }
-  .layout-btn {
-    background: #1a2a3a; border: 1px solid #2a3a4a; color: #ccc;
-    padding: 5px 9px; border-radius: 4px; font-size: 11px;
-    cursor: pointer; transition: all 0.2s;
+  .cam-count { margin-left: auto; font-size: 11px; color: #667; }
+
+  /* ── Floating Joystick Panel ── */
+  .joystick-panel {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    z-index: 900; background: rgba(13,27,42,0.95); border: 1px solid #1a2a3a;
+    border-radius: 30px; padding: 8px 12px; display: flex; align-items: center; gap: 10px;
+    backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   }
-  .layout-btn:hover { border-color: #00b4d8; color: #00b4d8; }
-  .layout-btn.active { background: #00b4d8; color: #fff; border-color: #00b4d8; }
+  .joystick-track {
+    width: 160px; height: 36px; background: #1a2a3a; border-radius: 18px;
+    position: relative; cursor: pointer; touch-action: none;
+    border: 1px solid #2a3a4a;
+  }
+  .joystick-track::before {
+    content: ''; position: absolute; top: 50%; left: 16px; right: 16px; height: 2px;
+    background: linear-gradient(90deg, #334, #00b4d8, #334); transform: translateY(-50%);
+  }
+  .joystick-dots {
+    position: absolute; top: 50%; left: 16px; right: 16px; height: 0;
+    display: flex; justify-content: space-between; z-index: 1;
+  }
+  .joystick-dot {
+    width: 6px; height: 6px; background: #445; border-radius: 50%;
+    transform: translateY(-50%);
+  }
+  .joystick-knob {
+    position: absolute; top: 50%; width: 28px; height: 28px;
+    background: radial-gradient(circle at 40% 35%, #00d4ff, #0088aa);
+    border: 2px solid #00e5ff; border-radius: 50%;
+    transform: translate(-50%, -50%); cursor: grab;
+    box-shadow: 0 0 12px rgba(0,180,216,0.4);
+    transition: left 0.15s ease-out;
+    z-index: 2;
+  }
+  .joystick-knob.dragging { cursor: grabbing; transition: none; box-shadow: 0 0 20px rgba(0,180,216,0.7); }
+  .joystick-label {
+    font-size: 14px; font-weight: 700; color: #00b4d8; min-width: 32px; text-align: center;
+  }
 
   /* ── Weather Section ── */
   .weather-area {
@@ -144,11 +175,7 @@
     padding: 4px;
     grid-template-columns: repeat(4, 1fr);
   }
-  .grid.layout-1x1 { grid-template-columns: 1fr; }
-  .grid.layout-1x1 .cam-card.featured { grid-column: span 1; }
-  .grid.layout-2x2 { grid-template-columns: repeat(2, 1fr); }
-  .grid.layout-3x3 { grid-template-columns: repeat(3, 1fr); }
-  .grid.layout-4x4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-cols-1 .cam-card.featured { grid-column: span 1; }
 
   /* ── Camera Card ── */
   .cam-card {
@@ -262,8 +289,10 @@
     .controls { padding: 6px 10px; gap: 6px; }
     .controls label { font-size: 10px; }
     .filter-btn { padding: 5px 8px; font-size: 10px; }
-    .layout-btns { margin-left: 0; margin-top: 4px; width: 100%; }
-    .layout-btn { padding: 5px 8px; font-size: 10px; }
+    .joystick-panel { bottom: 12px; padding: 6px 10px; }
+    .joystick-track { width: 130px; height: 32px; }
+    .joystick-knob { width: 24px; height: 24px; }
+    .joystick-label { font-size: 13px; }
 
     /* ── Weather section: 모바일 1단 ── */
     .weather-section {
@@ -276,23 +305,6 @@
     .cam-media { min-height: 220px; }
     .cam-card.featured { grid-column: span 2; grid-row: span 2; }
     .cam-card.featured .cam-media { min-height: 280px; }
-    .grid.layout-1x1 .cam-card.featured { grid-column: span 1; }
-
-    /* ── CCTV Grid: 모바일에서도 선택한 레이아웃 유지 ── */
-    .grid { grid-template-columns: 1fr; }
-    .grid.layout-1x1 { grid-template-columns: 1fr; }
-    .grid.layout-2x2 { grid-template-columns: repeat(2, 1fr); }
-    .grid.layout-2x2 .cam-media { min-height: 140px; }
-    .grid.layout-3x3 { grid-template-columns: repeat(3, 1fr); }
-    .grid.layout-3x3 .cam-media { min-height: 100px; }
-    .grid.layout-3x3 .cam-name { font-size: 10px; }
-    .grid.layout-3x3 .cam-region { font-size: 9px; }
-    .grid.layout-3x3 .cam-status { display: none; }
-    .grid.layout-4x4 { grid-template-columns: repeat(4, 1fr); }
-    .grid.layout-4x4 .cam-media { min-height: 80px; }
-    .grid.layout-4x4 .cam-name { font-size: 9px; }
-    .grid.layout-4x4 .cam-region { display: none; }
-    .grid.layout-4x4 .cam-status { display: none; }
     .cam-label { padding: 10px 12px; }
     .cam-name { font-size: 13px; }
     .cam-region { font-size: 11px; padding: 3px 10px; }
@@ -306,13 +318,7 @@
     .zoom-btn { width: 40px; height: 40px; font-size: 20px; }
   }
 
-  /* ═══════════════════════════════════════
-     TABLET RESPONSIVE (max-width: 1024px)
-     ═══════════════════════════════════════ */
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .grid.layout-4x4 { grid-template-columns: repeat(3, 1fr); }
-    .grid.layout-3x3 { grid-template-columns: repeat(2, 1fr); }
-  }
+  /* (tablet adjustments now handled by joystick) */
 
   /* ═══════════════════════════════════════
      SMALL MOBILE (max-width: 480px)
@@ -324,10 +330,6 @@
     .tab-btn { padding: 7px 10px; font-size: 11px; }
     .cam-media { min-height: 200px; }
     .filter-btn { padding: 4px 7px; font-size: 9px; }
-    .grid.layout-3x3 .cam-media { min-height: 80px; }
-    .grid.layout-3x3 .cam-name { font-size: 9px; }
-    .grid.layout-4x4 .cam-media { min-height: 60px; }
-    .grid.layout-4x4 .cam-name { font-size: 8px; }
     .weather-section .weather-card { min-height: 170px; }
   }
 </style>
@@ -395,18 +397,21 @@
     <button class="filter-btn" data-region="제주 서부지역">서부</button>
     <button class="filter-btn" data-region="한라산">한라산</button>
     <button class="filter-btn" data-region="해수욕장">해수욕장</button>
-    <div class="layout-btns">
-      <label style="margin-right:4px">CCTV:</label>
-      <button class="layout-btn" data-layout="1x1">1단</button>
-      <button class="layout-btn" data-layout="2x2">2단</button>
-      <button class="layout-btn" data-layout="3x3">3단</button>
-      <button class="layout-btn active" data-layout="4x4">4단</button>
-    </div>
+    <span class="cam-count" id="cam-count-label"></span>
   </div>
-  <div class="grid layout-4x4" id="grid-combined"></div>
+  <div class="grid" id="grid-combined" style="grid-template-columns:repeat(4,1fr)"></div>
 </div>
 
 <button class="close-overlay" id="closeOverlay" onclick="closeExpanded()">✕ 닫기 (ESC)</button>
+
+<!-- Floating Joystick Panel -->
+<div class="joystick-panel" id="joystickPanel">
+  <span class="joystick-label" id="colLabel">4단</span>
+  <div class="joystick-track" id="joystickTrack">
+    <div class="joystick-dots"><span class="joystick-dot"></span><span class="joystick-dot"></span><span class="joystick-dot"></span><span class="joystick-dot"></span><span class="joystick-dot"></span><span class="joystick-dot"></span></div>
+    <div class="joystick-knob" id="joystickKnob"></div>
+  </div>
+</div>
 <div class="zoom-controls" id="zoomControls">
   <button class="zoom-btn" onclick="zoomAction('out')">−</button>
   <span class="zoom-level" id="zoomLevel">1.0x</span>
@@ -640,6 +645,7 @@ function toggleExpand(camId) {
     card.classList.add('expanded'); expandedCard = card;
     document.getElementById('closeOverlay').classList.add('visible');
     document.getElementById('zoomControls').classList.add('visible');
+    document.getElementById('joystickPanel').style.display = 'none';
     setupZoomListeners(card);
   }
 }
@@ -648,6 +654,7 @@ function closeExpanded() {
   if (expandedCard) { expandedCard.classList.remove('expanded'); expandedCard = null; }
   document.getElementById('closeOverlay').classList.remove('visible');
   document.getElementById('zoomControls').classList.remove('visible');
+  document.getElementById('joystickPanel').style.display = '';
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeExpanded(); });
 
@@ -716,23 +723,59 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-/* ═══ CCTV layout buttons ═══ */
-document.querySelectorAll('.layout-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const g = document.getElementById('grid-combined');
-    if (g) g.className = 'grid layout-' + btn.dataset.layout;
-  });
-});
+/* ═══ Joystick Column Control ═══ */
+let currentCols = window.innerWidth <= 768 ? 2 : 4;
+const MIN_COLS = 1, MAX_COLS = 6;
+
+function setColumns(n) {
+  currentCols = Math.max(MIN_COLS, Math.min(MAX_COLS, n));
+  const grid = document.getElementById('grid-combined');
+  grid.style.gridTemplateColumns = `repeat(${currentCols}, 1fr)`;
+  document.getElementById('colLabel').textContent = currentCols + '단';
+  updateKnobPosition();
+  /* 1단일 때 featured 열 제한 */
+  grid.classList.toggle('grid-cols-1', currentCols === 1);
+}
+
+function updateKnobPosition() {
+  const track = document.getElementById('joystickTrack');
+  const knob = document.getElementById('joystickKnob');
+  const padding = 16;
+  const range = track.offsetWidth - padding * 2;
+  const pct = (currentCols - MIN_COLS) / (MAX_COLS - MIN_COLS);
+  knob.style.left = (padding + pct * range) + 'px';
+}
+
+function colsFromX(clientX) {
+  const track = document.getElementById('joystickTrack');
+  const rect = track.getBoundingClientRect();
+  const padding = 16;
+  const x = Math.max(0, Math.min(clientX - rect.left - padding, rect.width - padding * 2));
+  const pct = x / (rect.width - padding * 2);
+  return Math.round(MIN_COLS + pct * (MAX_COLS - MIN_COLS));
+}
+
+/* Mouse drag */
+(function() {
+  const knob = document.getElementById('joystickKnob');
+  const track = document.getElementById('joystickTrack');
+  let dragging = false;
+
+  knob.addEventListener('mousedown', (e) => { dragging = true; knob.classList.add('dragging'); e.preventDefault(); });
+  document.addEventListener('mousemove', (e) => { if (dragging) setColumns(colsFromX(e.clientX)); });
+  document.addEventListener('mouseup', () => { dragging = false; knob.classList.remove('dragging'); });
+
+  /* Click on track */
+  track.addEventListener('click', (e) => { if (e.target !== knob) setColumns(colsFromX(e.clientX)); });
+
+  /* Touch drag */
+  knob.addEventListener('touchstart', (e) => { dragging = true; knob.classList.add('dragging'); e.preventDefault(); });
+  document.addEventListener('touchmove', (e) => { if (dragging) setColumns(colsFromX(e.touches[0].clientX)); });
+  document.addEventListener('touchend', () => { dragging = false; knob.classList.remove('dragging'); });
+})();
 
 /* ═══ Init ═══ */
-if (window.innerWidth <= 768) {
-  document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
-  const btn2 = document.querySelector('.layout-btn[data-layout="2x2"]');
-  if (btn2) btn2.classList.add('active');
-  document.getElementById('grid-combined').className = 'grid layout-2x2';
-}
+setColumns(currentCols);
 renderCCTV();
 </script>
 </body>
