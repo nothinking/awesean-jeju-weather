@@ -175,6 +175,14 @@
     padding: 4px;
     grid-template-columns: repeat(4, 1fr);
   }
+  .grid.layout-compact { grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 2px; }
+  .grid.layout-compact .cam-card { border-radius: 2px; }
+  .grid.layout-compact .cam-media { min-height: 80px; }
+  .grid.layout-compact .cam-label { padding: 4px 6px; }
+  .grid.layout-compact .cam-name { font-size: 9px; }
+  .grid.layout-compact .cam-region { display: none; }
+  .grid.layout-compact .cam-status { display: none; }
+  .grid.layout-compact .cam-expand-btn { width: 22px; height: 22px; font-size: 11px; top: 4px; right: 4px; }
   .grid.layout-2x2 { grid-template-columns: repeat(2, 1fr); }
   .grid.layout-3x3 { grid-template-columns: repeat(3, 1fr); }
   .grid.layout-4x4 { grid-template-columns: repeat(4, 1fr); }
@@ -310,13 +318,20 @@
       grid-row: auto;
     }
 
-    /* ── CCTV Grid: 모바일은 1열 기본 ── */
+    /* ── CCTV Grid: 모바일 기본 1열, 모아보기는 4열 유지 ── */
     .grid,
     .grid.layout-2x2,
     .grid.layout-3x3,
     .grid.layout-4x4 {
       grid-template-columns: 1fr;
     }
+    .grid.layout-compact {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px; padding: 2px;
+    }
+    .grid.layout-compact .cam-media { min-height: 60px; }
+    .grid.layout-compact .cam-name { font-size: 8px; }
+    .grid.layout-compact .cam-label { padding: 3px 4px; }
 
     /* ── Camera card ── */
     .cam-media { min-height: 220px; }
@@ -352,6 +367,9 @@
     .combined-weather { grid-template-rows: 180px 180px 180px; }
     .cam-media { min-height: 200px; }
     .filter-btn { padding: 4px 7px; font-size: 9px; }
+    .grid.layout-compact { grid-template-columns: repeat(3, 1fr); }
+    .grid.layout-compact .cam-media { min-height: 55px; }
+    .grid.layout-compact .cam-name { font-size: 7px; }
   }
 </style>
 </head>
@@ -375,9 +393,6 @@
   <button class="tab-btn active" data-tab="combined">
     <span class="tab-icon">📡</span> 통합 관제
   </button>
-  <button class="tab-btn" data-tab="cctv">
-    <span class="tab-icon">📹</span> CCTV 전체
-  </button>
   <button class="tab-btn" data-tab="weather">
     <span class="tab-icon">🌤</span> 날씨 지도
   </button>
@@ -385,6 +400,22 @@
 
 <!-- ═══ COMBINED VIEW (default) ═══ -->
 <div class="section-panel active" id="panel-combined">
+  <div class="controls" id="combined-controls">
+    <label>지역:</label>
+    <button class="filter-btn active" data-region="all">전체</button>
+    <button class="filter-btn" data-region="제주 북부지역">북부</button>
+    <button class="filter-btn" data-region="제주 남부지역">남부</button>
+    <button class="filter-btn" data-region="제주 동부지역">동부</button>
+    <button class="filter-btn" data-region="제주 서부지역">서부</button>
+    <button class="filter-btn" data-region="한라산">한라산</button>
+    <div class="layout-btns">
+      <label style="margin-right:4px">보기:</label>
+      <button class="layout-btn" data-layout="compact">모아보기</button>
+      <button class="layout-btn" data-layout="2x2">2×2</button>
+      <button class="layout-btn" data-layout="3x3">3×3</button>
+      <button class="layout-btn active" data-layout="4x4">4×4</button>
+    </div>
+  </div>
   <div class="combined-section">
     <div class="combined-weather">
       <div class="weather-card">
@@ -412,26 +443,6 @@
     <!-- CCTV grid in combined view -->
     <div class="grid layout-4x4" id="grid-combined" style="grid-column: 1 / -1;"></div>
   </div>
-</div>
-
-<!-- ═══ CCTV ONLY VIEW ═══ -->
-<div class="section-panel" id="panel-cctv">
-  <div class="controls" id="cctv-controls">
-    <label>지역 필터:</label>
-    <button class="filter-btn active" data-region="all">전체</button>
-    <button class="filter-btn" data-region="제주 북부지역">북부</button>
-    <button class="filter-btn" data-region="제주 남부지역">남부</button>
-    <button class="filter-btn" data-region="제주 동부지역">동부</button>
-    <button class="filter-btn" data-region="제주 서부지역">서부</button>
-    <button class="filter-btn" data-region="한라산">한라산</button>
-    <div class="layout-btns">
-      <label style="margin-right:4px">레이아웃:</label>
-      <button class="layout-btn" data-layout="2x2">2×2</button>
-      <button class="layout-btn" data-layout="3x3">3×3</button>
-      <button class="layout-btn active" data-layout="4x4">4×4</button>
-    </div>
-  </div>
-  <div class="grid layout-4x4" id="grid-cctv" style="min-height:calc(100vh - 150px);"></div>
 </div>
 
 <!-- ═══ WEATHER ONLY VIEW ═══ -->
@@ -530,7 +541,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     });
 
     if (tab === 'combined') renderCombinedCCTV();
-    else if (tab === 'cctv') renderCCTVGrid();
   });
 });
 
@@ -571,12 +581,6 @@ function renderCameras(gridEl, cameraList) {
 
 function renderCombinedCCTV() {
   const grid = document.getElementById('grid-combined');
-  renderCameras(grid, cameras);
-  document.getElementById('cam-count').textContent = cameras.length + ' 카메라';
-}
-
-function renderCCTVGrid() {
-  const grid = document.getElementById('grid-cctv');
   const filtered = currentFilter === 'all' ? cameras : cameras.filter(c => c.region === currentFilter);
   renderCameras(grid, filtered);
   document.getElementById('cam-count').textContent = filtered.length + ' 카메라';
@@ -661,7 +665,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.classList.add('active');
     currentFilter = btn.dataset.region;
     Object.keys(hlsInstances).forEach(k => { try { hlsInstances[k].destroy(); } catch(e){} delete hlsInstances[k]; });
-    renderCCTVGrid();
+    renderCombinedCCTV();
   });
 });
 
@@ -670,9 +674,8 @@ document.querySelectorAll('.layout-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const g = document.getElementById('grid-cctv');
-    g.className = 'grid layout-' + btn.dataset.layout;
-    g.style.minHeight = 'calc(100vh - 150px)';
+    const g = document.getElementById('grid-combined');
+    if (g) { g.className = 'grid layout-' + btn.dataset.layout; g.style.gridColumn = '1 / -1'; }
   });
 });
 
@@ -686,16 +689,14 @@ document.querySelectorAll('.wlayout-btn').forEach(btn => {
   });
 });
 
-/* ═══ Mobile: auto-set 2x2 layout on small screens ═══ */
+/* ═══ Mobile: auto-set compact layout on small screens ═══ */
 function applyMobileDefaults() {
   if (window.innerWidth <= 768) {
     document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
-    const btn2x2 = document.querySelector('.layout-btn[data-layout="2x2"]');
-    if (btn2x2) btn2x2.classList.add('active');
-    const gridCctv = document.getElementById('grid-cctv');
-    if (gridCctv) { gridCctv.className = 'grid layout-2x2'; }
+    const btnCompact = document.querySelector('.layout-btn[data-layout="compact"]');
+    if (btnCompact) btnCompact.classList.add('active');
     const gridCombined = document.getElementById('grid-combined');
-    if (gridCombined) { gridCombined.className = 'grid layout-2x2'; gridCombined.style.gridColumn = '1 / -1'; }
+    if (gridCombined) { gridCombined.className = 'grid layout-compact'; gridCombined.style.gridColumn = '1 / -1'; }
   }
 }
 
