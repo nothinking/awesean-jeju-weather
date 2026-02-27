@@ -101,21 +101,18 @@
     display: grid;
     gap: 4px;
   }
-  .weather-section.weather-layout-row {
+  .weather-section.weather-layout-3 {
     grid-template-columns: 1fr 1fr 1fr;
     height: calc(100vh - 100px);
   }
-  .weather-section.weather-layout-focus {
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    height: calc(100vh - 100px);
-  }
-  .weather-section.weather-layout-2x2 {
+  .weather-section.weather-layout-2 {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
     height: calc(100vh - 100px);
   }
-  .weather-section.weather-layout-stack {
+  .weather-section.weather-layout-2 .weather-card:last-child {
+    grid-column: 1 / -1;
+  }
+  .weather-section.weather-layout-1 {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr 1fr;
     height: calc(100vh - 100px);
@@ -167,7 +164,6 @@
     grid-template-columns: 1fr 1fr 1fr;
     gap: 4px;
   }
-
   /* ── CCTV Grid ── */
   .grid {
     display: grid;
@@ -175,14 +171,7 @@
     padding: 4px;
     grid-template-columns: repeat(4, 1fr);
   }
-  .grid.layout-compact { grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 2px; }
-  .grid.layout-compact .cam-card { border-radius: 2px; }
-  .grid.layout-compact .cam-media { min-height: 80px; }
-  .grid.layout-compact .cam-label { padding: 4px 6px; }
-  .grid.layout-compact .cam-name { font-size: 9px; }
-  .grid.layout-compact .cam-region { display: none; }
-  .grid.layout-compact .cam-status { display: none; }
-  .grid.layout-compact .cam-expand-btn { width: 22px; height: 22px; font-size: 11px; top: 4px; right: 4px; }
+  .grid.layout-1x1 { grid-template-columns: 1fr; }
   .grid.layout-2x2 { grid-template-columns: repeat(2, 1fr); }
   .grid.layout-3x3 { grid-template-columns: repeat(3, 1fr); }
   .grid.layout-4x4 { grid-template-columns: repeat(4, 1fr); }
@@ -304,37 +293,42 @@
       grid-template-columns: 1fr;
       grid-template-rows: 200px 200px 200px;
     }
-
-    /* ── Weather section ── */
-    .weather-section.weather-layout-row,
-    .weather-section.weather-layout-focus,
-    .weather-section.weather-layout-2x2,
-    .weather-section.weather-layout-stack {
+    /* ── Weather section: 모바일에서도 선택한 레이아웃 유지 ── */
+    .weather-section.weather-layout-1 {
       grid-template-columns: 1fr;
       grid-template-rows: 250px 250px 250px;
       height: auto;
     }
-    .weather-section.weather-layout-focus .weather-card:first-child {
-      grid-row: auto;
+    .weather-section.weather-layout-2 {
+      grid-template-columns: 1fr 1fr;
+      height: 60vh;
     }
+    .weather-section.weather-layout-3 {
+      grid-template-columns: 1fr 1fr 1fr;
+      height: 40vh;
+    }
+    .weather-section.weather-layout-3 .weather-card-title { font-size: 10px; }
+    .weather-section.weather-layout-3 .weather-card-badge { display: none; }
 
-    /* ── CCTV Grid: 모바일 기본 1열, 모아보기는 4열 유지 ── */
-    .grid,
-    .grid.layout-2x2,
-    .grid.layout-3x3,
-    .grid.layout-4x4 {
-      grid-template-columns: 1fr;
-    }
-    .grid.layout-compact {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2px; padding: 2px;
-    }
-    .grid.layout-compact .cam-media { min-height: 60px; }
-    .grid.layout-compact .cam-name { font-size: 8px; }
-    .grid.layout-compact .cam-label { padding: 3px 4px; }
-
-    /* ── Camera card ── */
+    /* ── Camera card (기본 모바일) ── */
     .cam-media { min-height: 220px; }
+
+    /* ── CCTV Grid: 모바일에서도 선택한 레이아웃 유지 ── */
+    .grid { grid-template-columns: 1fr; }
+    .grid.layout-1x1 { grid-template-columns: 1fr; }
+    .grid.layout-2x2 { grid-template-columns: repeat(2, 1fr); }
+    .grid.layout-2x2 .cam-media { min-height: 140px; }
+    .grid.layout-3x3 { grid-template-columns: repeat(3, 1fr); }
+    .grid.layout-3x3 .cam-media { min-height: 100px; }
+    .grid.layout-3x3 .cam-name { font-size: 10px; }
+    .grid.layout-3x3 .cam-region { font-size: 9px; }
+    .grid.layout-3x3 .cam-status { display: none; }
+    .grid.layout-4x4 { grid-template-columns: repeat(4, 1fr); }
+    .grid.layout-4x4 .cam-media { min-height: 80px; }
+    .grid.layout-4x4 .cam-name { font-size: 9px; }
+    .grid.layout-4x4 .cam-region { display: none; }
+    .grid.layout-4x4 .cam-status { display: none; }
+    .grid.layout-4x4 .cam-expand-btn { width: 24px; height: 24px; font-size: 12px; }
     .cam-expand-btn { display: flex; width: 36px; height: 36px; font-size: 18px; }
     .cam-label { padding: 10px 12px; }
     .cam-name { font-size: 13px; }
@@ -367,9 +361,12 @@
     .combined-weather { grid-template-rows: 180px 180px 180px; }
     .cam-media { min-height: 200px; }
     .filter-btn { padding: 4px 7px; font-size: 9px; }
-    .grid.layout-compact { grid-template-columns: repeat(3, 1fr); }
-    .grid.layout-compact .cam-media { min-height: 55px; }
-    .grid.layout-compact .cam-name { font-size: 7px; }
+    .grid.layout-3x3 .cam-media { min-height: 80px; }
+    .grid.layout-3x3 .cam-name { font-size: 9px; }
+    .grid.layout-4x4 .cam-media { min-height: 60px; }
+    .grid.layout-4x4 .cam-name { font-size: 8px; }
+    .weather-section.weather-layout-3 { height: 30vh; }
+    .weather-section.weather-layout-3 .weather-card-title { font-size: 9px; }
   }
 </style>
 </head>
@@ -409,11 +406,11 @@
     <button class="filter-btn" data-region="제주 서부지역">서부</button>
     <button class="filter-btn" data-region="한라산">한라산</button>
     <div class="layout-btns">
-      <label style="margin-right:4px">보기:</label>
-      <button class="layout-btn" data-layout="compact">모아보기</button>
-      <button class="layout-btn" data-layout="2x2">2×2</button>
-      <button class="layout-btn" data-layout="3x3">3×3</button>
-      <button class="layout-btn active" data-layout="4x4">4×4</button>
+      <label style="margin-right:4px">CCTV:</label>
+      <button class="layout-btn" data-layout="1x1">1단</button>
+      <button class="layout-btn" data-layout="2x2">2단</button>
+      <button class="layout-btn" data-layout="3x3">3단</button>
+      <button class="layout-btn active" data-layout="4x4">4단</button>
     </div>
   </div>
   <div class="combined-section">
@@ -449,11 +446,11 @@
 <div class="section-panel" id="panel-weather">
   <div class="weather-controls">
     <label>레이아웃:</label>
-    <button class="wlayout-btn active" data-wlayout="row">가로 3분할</button>
-    <button class="wlayout-btn" data-wlayout="focus">메인+사이드</button>
-    <button class="wlayout-btn" data-wlayout="stack">세로 3분할</button>
+    <button class="wlayout-btn" data-wlayout="1">1단</button>
+    <button class="wlayout-btn" data-wlayout="2">2단</button>
+    <button class="wlayout-btn active" data-wlayout="3">3단</button>
   </div>
-  <div class="weather-section weather-layout-row" id="weather-grid">
+  <div class="weather-section weather-layout-3" id="weather-grid">
     <div class="weather-card">
       <div class="weather-card-label">
         <span class="weather-card-title"><span class="w-icon">🛰</span> 위성 영상</span>
@@ -689,14 +686,22 @@ document.querySelectorAll('.wlayout-btn').forEach(btn => {
   });
 });
 
-/* ═══ Mobile: auto-set compact layout on small screens ═══ */
+/* ═══ Mobile: auto-set default layout on small screens ═══ */
 function applyMobileDefaults() {
   if (window.innerWidth <= 768) {
+    // CCTV: default to 4단 on mobile
     document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
-    const btnCompact = document.querySelector('.layout-btn[data-layout="compact"]');
-    if (btnCompact) btnCompact.classList.add('active');
+    const btn4 = document.querySelector('.layout-btn[data-layout="4x4"]');
+    if (btn4) btn4.classList.add('active');
     const gridCombined = document.getElementById('grid-combined');
-    if (gridCombined) { gridCombined.className = 'grid layout-compact'; gridCombined.style.gridColumn = '1 / -1'; }
+    if (gridCombined) { gridCombined.className = 'grid layout-4x4'; gridCombined.style.gridColumn = '1 / -1'; }
+
+    // Weather: default to 3단 on mobile
+    document.querySelectorAll('.wlayout-btn').forEach(b => b.classList.remove('active'));
+    const btnW3 = document.querySelector('.wlayout-btn[data-wlayout="3"]');
+    if (btnW3) btnW3.classList.add('active');
+    const weatherGrid = document.getElementById('weather-grid');
+    if (weatherGrid) weatherGrid.className = 'weather-section weather-layout-3';
   }
 }
 
