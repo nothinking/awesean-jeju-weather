@@ -469,8 +469,7 @@ function renderCameras(gridEl, cameraList) {
     // Mobile: double-tap to expand
     let tapTimeout;
     card.addEventListener('touchend', (e) => {
-      if (e.target.closest('.cam-expand-btn')) return;
-      if (tapTimeout) { clearTimeout(tapTimeout); tapTimeout = null; toggleExpand(cam.id); }
+      if (tapTimeout) { clearTimeout(tapTimeout); tapTimeout = null; e.preventDefault(); toggleExpand(cam.id); }
       else { tapTimeout = setTimeout(() => { tapTimeout = null; }, 300); }
     });
     gridEl.appendChild(card);
