@@ -236,13 +236,16 @@
   .cam-label {
     position: absolute; top: 0; left: 0; right: 0;
     background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
-    padding: 8px 10px; z-index: 10;
+    padding: var(--cam-label-pad, 8px) 10px; z-index: 10;
     display: flex; justify-content: space-between; align-items: center;
   }
-  .cam-name { font-size: 12px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+  .cam-name { font-size: var(--cam-name-size, 12px); font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); transition: font-size 0.2s; }
   .cam-region {
-    font-size: 10px; padding: 2px 8px; border-radius: 10px;
+    font-size: var(--cam-region-size, 10px); padding: 2px 8px; border-radius: 10px; transition: font-size 0.2s;
   }
+  .hide-region .cam-region { display: none; }
+  .hide-label .cam-label { padding: 4px 6px; }
+  .hide-label .cam-name { font-size: 8px; }
   .cam-status {
     position: absolute; bottom: 0; left: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);
@@ -373,7 +376,6 @@
     <h1><span>awesean</span>-jeju-weather</h1>
   </div>
   <div class="header-right">
-    <span><span class="live-dot"></span> LIVE</span>
     <span id="clock"></span>
     <span id="cam-count">26 카메라</span>
   </div>
@@ -535,10 +537,6 @@ function renderCameras(gridEl, cameraList) {
       </div>
       <div class="cam-media" id="media-${cam.id}">
         <div class="loading">연결 중...</div>
-      </div>
-      <div class="cam-status">
-        <span class="cam-live"><span class="dot"></span> LIVE</span>
-        <span class="cam-source">${cam.source}</span>
       </div>
     `;
     let clickTimer = null;
@@ -768,6 +766,14 @@ function setColumns(n) {
   grid.style.gridTemplateColumns = `repeat(${currentCols}, 1fr)`;
   document.getElementById('colLabel').textContent = currentCols + '단';
   grid.classList.toggle('grid-cols-1', currentCols === 1);
+  /* Scale text with column count */
+  const sizes = { 1:[16,12,10], 2:[13,10,8], 3:[11,9,7], 4:[11,9,7], 5:[9,8,0], 6:[8,0,0] };
+  const [nameS, regionS, padS] = sizes[currentCols] || [11,9,8];
+  grid.style.setProperty('--cam-name-size', nameS + 'px');
+  grid.style.setProperty('--cam-region-size', regionS + 'px');
+  grid.style.setProperty('--cam-label-pad', (padS > 0 ? padS : 4) + 'px');
+  grid.classList.toggle('hide-region', regionS === 0);
+  grid.classList.toggle('hide-label', nameS <= 8 && currentCols >= 6);
 }
 
 (function() {
