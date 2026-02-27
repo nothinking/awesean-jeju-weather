@@ -311,7 +311,7 @@
   <div class="header-right">
     <span><span class="live-dot"></span> LIVE</span>
     <span id="clock"></span>
-    <span id="cam-count">16 카메라</span>
+    <span id="cam-count">26 카메라</span>
   </div>
 </div>
 
@@ -362,6 +362,7 @@
     <button class="filter-btn" data-region="제주 동부지역">동부</button>
     <button class="filter-btn" data-region="제주 서부지역">서부</button>
     <button class="filter-btn" data-region="한라산">한라산</button>
+    <button class="filter-btn" data-region="해수욕장">해수욕장</button>
     <div class="layout-btns">
       <label style="margin-right:4px">CCTV:</label>
       <button class="layout-btn" data-layout="1x1">1단</button>
@@ -378,22 +379,34 @@
 <script>
 /* ═══ Camera Data ═══ */
 const cameras = [
+  /* ── 해수욕장 ── */
+  { id:17, name:"삼양해수욕장", region:"제주 북부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi6/11-14.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi6/11-14.stream/playlist.m3u8", source:"해수욕장" },
+  { id:18, name:"함덕해수욕장", region:"제주 북부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi6/11-19.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi6/11-19.stream/playlist.m3u8", source:"해수욕장" },
+  { id:24, name:"이호테우해수욕장", region:"제주 북부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi7/11-30T.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi7/11-30T.stream/playlist.m3u8", source:"해수욕장" },
+  { id:25, name:"도두봉해안", region:"제주 북부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi6/11-13.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi6/11-13.stream/playlist.m3u8", source:"해수욕장" },
+  { id:6, name:"중문 해안", region:"제주 남부지역", type:"mjpg", url:"http://59.8.95.74:4009/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100010/0/1", source:"해수욕장" },
+  { id:19, name:"월정리해수욕장", region:"제주 동부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi7/11-21.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi7/11-21.stream/playlist.m3u8", source:"해수욕장" },
+  { id:20, name:"김녕해수욕장", region:"제주 동부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi6/11-20.stream/chunklist_w103520355.m3u8", hls:"http://211.114.96.121:1935/jejusi6/11-20.stream/chunklist_w103520355.m3u8", source:"해수욕장" },
+  { id:21, name:"평대리해변", region:"제주 동부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi7/11-22.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi7/11-22.stream/playlist.m3u8", source:"해수욕장" },
+  { id:22, name:"협재해수욕장", region:"제주 서부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi6/11-17.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi6/11-17.stream/playlist.m3u8", source:"해수욕장" },
+  { id:23, name:"곽지해수욕장", region:"제주 서부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi6/11-16.stream/chunklist_w794611657.m3u8", hls:"http://211.114.96.121:1935/jejusi6/11-16.stream/chunklist_w794611657.m3u8", source:"해수욕장" },
+  { id:9, name:"화순 해안", region:"제주 서부지역", type:"mjpg", url:"http://59.8.95.74:4008/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100005/0/1", source:"해수욕장" },
+  { id:26, name:"하모해수욕장", region:"제주 서부지역", type:"hls", url:"http://211.34.191.215:1935/live/11-24.stream/chunklist_w1978034706.m3u8", hls:"http://211.34.191.215:1935/live/11-24.stream/chunklist_w1978034706.m3u8", source:"해수욕장" },
+  /* ── 기타 ── */
   { id:1, name:"용두암 해안", region:"제주 북부지역", type:"mjpg", url:"http://59.8.95.74:4001/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100003/0/1", source:"재난안전대책본부" },
   { id:2, name:"탑동 해안", region:"제주 북부지역", type:"mjpg", url:"http://59.8.95.74:4002/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100001/0/1", source:"재난안전대책본부" },
+  { id:15, name:"제주공항", region:"제주 북부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/33", hls:"http://123.140.197.51/stream/33/play.m3u8", source:"" },
   { id:3, name:"서귀포 항", region:"제주 남부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/35", hls:"http://123.140.197.51/stream/35/play.m3u8", source:"" },
   { id:4, name:"법환포구", region:"제주 남부지역", type:"mjpg", url:"http://59.8.95.74:4004/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100007/0/1", source:"재난안전대책본부" },
   { id:5, name:"법환 해안", region:"제주 남부지역", type:"mjpg", url:"http://59.8.95.74:4005/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100008/0/1", source:"재난안전대책본부" },
-  { id:6, name:"중문 해안", region:"제주 남부지역", type:"mjpg", url:"http://59.8.95.74:4009/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100010/0/1", source:"재난안전대책본부" },
   { id:7, name:"온평 해안", region:"제주 동부지역", type:"mjpg", url:"http://59.8.95.74:4006/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100009/0/1", source:"재난안전대책본부" },
+  { id:16, name:"성산일출봉", region:"제주 동부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/34", hls:"http://123.140.197.51/stream/34/play.m3u8", source:"" },
   { id:8, name:"신창 해안", region:"제주 서부지역", type:"mjpg", url:"http://59.8.95.74:4007/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100004/0/1", source:"재난안전대책본부" },
-  { id:9, name:"화순 해안", region:"제주 서부지역", type:"mjpg", url:"http://59.8.95.74:4008/axis-cgi/mjpg/video.cgi?resolution=800x450", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100005/0/1", source:"재난안전대책본부" },
   { id:10, name:"백록담", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv01.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv01.stream_360p/playlist.m3u8", source:"한라산국립공원" },
   { id:11, name:"왕관릉", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv02.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv02.stream_360p/playlist.m3u8", source:"한라산국립공원" },
   { id:12, name:"윗세오름", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv03.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv03.stream_360p/playlist.m3u8", source:"한라산국립공원" },
   { id:13, name:"어승생악", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv04.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv04.stream_360p/playlist.m3u8", source:"한라산국립공원" },
-  { id:14, name:"1100도로", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv05.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv05.stream_360p/playlist.m3u8", source:"한라산국립공원" },
-  { id:15, name:"제주공항", region:"제주 북부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/33", hls:"http://123.140.197.51/stream/33/play.m3u8", source:"" },
-  { id:16, name:"성산일출봉", region:"제주 동부지역", type:"hls", url:"http://123.140.197.51/media/contents/live/34", hls:"http://123.140.197.51/stream/34/play.m3u8", source:"" }
+  { id:14, name:"1100도로", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv05.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv05.stream_360p/playlist.m3u8", source:"한라산국립공원" }
 ];
 
 const regionColors = {
@@ -467,7 +480,7 @@ function renderCameras(gridEl, cameraList) {
 
 function renderCCTV() {
   const grid = document.getElementById('grid-combined');
-  const filtered = currentFilter === 'all' ? cameras : cameras.filter(c => c.region === currentFilter);
+  const filtered = currentFilter === 'all' ? cameras : currentFilter === '해수욕장' ? cameras.filter(c => c.source === '해수욕장') : cameras.filter(c => c.region === currentFilter);
   renderCameras(grid, filtered);
   document.getElementById('cam-count').textContent = filtered.length + ' 카메라';
 }
@@ -566,6 +579,12 @@ document.querySelectorAll('.layout-btn').forEach(btn => {
 });
 
 /* ═══ Init ═══ */
+if (window.innerWidth <= 768) {
+  document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  const btn2 = document.querySelector('.layout-btn[data-layout="2x2"]');
+  if (btn2) btn2.classList.add('active');
+  document.getElementById('grid-combined').className = 'grid layout-2x2';
+}
 renderCCTV();
 </script>
 </body>
