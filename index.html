@@ -46,25 +46,44 @@
   }
   #clock { font-family: 'Courier New', monospace; font-size: 15px; color: #f59e0b; font-weight: bold; }
 
-  /* ── Tab Navigation (모바일 전용) ── */
-  .tab-nav {
-    display: none;
-    background: #0d1b2a;
-    padding: 0 24px;
-    border-bottom: 1px solid #1a2a3a;
-    position: sticky; top: 56px; z-index: 99;
+  /* ── Tab Seesaw (모바일 전용) ── */
+  .tab-seesaw-wrap {
+    display: none; position: fixed; bottom: 16px; left: 16px; z-index: 900;
   }
-  .tab-btn {
-    background: none; border: none; color: #667;
-    padding: 10px 20px;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-    border-bottom: 2px solid transparent;
-    display: flex; align-items: center; gap: 6px;
+  .tab-seesaw {
+    width: 100px; height: 34px; position: relative;
+    perspective: 120px;
   }
-  .tab-btn:hover { color: #aab; }
-  .tab-btn.active { color: #f59e0b; border-bottom-color: #f59e0b; }
-  .tab-btn .tab-icon { font-size: 15px; }
+  .tab-seesaw-board {
+    width: 100%; height: 100%; display: flex;
+    border-radius: 17px; overflow: hidden;
+    background: #1a2a3a; border: 1px solid #2a3a4a;
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: rotateX(0deg);
+  }
+  .tab-seesaw.tilt-left .tab-seesaw-board { transform: rotateX(8deg); }
+  .tab-seesaw.tilt-right .tab-seesaw-board { transform: rotateX(-8deg); }
+  .tab-seesaw-side {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; cursor: pointer; transition: all 0.3s;
+    background: transparent; border: none; padding: 0;
+    color: #556; position: relative;
+  }
+  .tab-seesaw-side:first-child { border-right: 1px solid #2a3a4a; }
+  .tab-seesaw-side:hover { background: rgba(245,158,11,0.06); }
+  .tab-seesaw.tilt-left .tab-seesaw-side:first-child,
+  .tab-seesaw.tilt-right .tab-seesaw-side:last-child {
+    background: rgba(245,158,11,0.15);
+  }
+  .tab-seesaw::after {
+    content: ''; position: absolute; bottom: -5px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-bottom: 5px solid #2a3a4a;
+    rotate: 180deg;
+  }
 
   /* ── Compass Filter ── */
   .compass {
@@ -363,14 +382,8 @@
     #clock { font-size: 12px; }
     #cam-count { display: none; }
 
-    /* ── Tabs: 모바일에서만 표시 ── */
-    .tab-nav {
-      display: flex;
-      padding: 0 8px; top: 46px;
-      overflow-x: auto; -webkit-overflow-scrolling: touch;
-    }
-    .tab-btn { padding: 8px 12px; font-size: 12px; gap: 4px; white-space: nowrap; }
-    .tab-btn .tab-icon { font-size: 13px; }
+    /* ── Tab seesaw: 모바일에서만 표시 ── */
+    .tab-seesaw-wrap { display: block; }
 
     /* ── 모바일 섹션 전환 ── */
     .weather-area { display: none; }
@@ -442,14 +455,14 @@
   </div>
 </div>
 
-<!-- ═══ TAB NAVIGATION (모바일 전용) ═══ -->
-<div class="tab-nav">
-  <button class="tab-btn active" data-tab="cctv">
-    <span class="tab-icon">📡</span> CCTV
-  </button>
-  <button class="tab-btn" data-tab="weather">
-    <span class="tab-icon">🌤</span> 날씨 지도
-  </button>
+<!-- ═══ TAB SEESAW (모바일 전용) ═══ -->
+<div class="tab-seesaw-wrap" id="tabSeesawWrap">
+  <div class="tab-seesaw tilt-left" id="tabSeesaw">
+    <div class="tab-seesaw-board">
+      <button class="tab-seesaw-side" data-tab="cctv">📡</button>
+      <button class="tab-seesaw-side" data-tab="weather">🌤</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ WEATHER SECTION ═══ -->
@@ -578,12 +591,14 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-/* ═══ Mobile tab switching ═══ */
-document.querySelectorAll('.tab-btn').forEach(btn => {
+/* ═══ Mobile tab switching (seesaw) ═══ */
+document.querySelectorAll('.tab-seesaw-side').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    const seesaw = document.getElementById('tabSeesaw');
     const tab = btn.dataset.tab;
+    const isLeft = tab === 'cctv';
+    seesaw.classList.remove('tilt-left', 'tilt-right');
+    seesaw.classList.add(isLeft ? 'tilt-left' : 'tilt-right');
     const weatherEl = document.getElementById('section-weather');
     const cctvEl = document.getElementById('section-cctv');
     weatherEl.classList.toggle('mobile-active', tab === 'weather');
@@ -811,6 +826,7 @@ function toggleExpand(camId) {
     document.getElementById('zoomControls').classList.add('visible');
     document.getElementById('leverPanel').style.display = 'none';
     document.getElementById('filterPanel').style.display = 'none';
+    document.getElementById('tabSeesawWrap').style.display = 'none';
     setupZoomListeners(card);
   }
 }
@@ -821,6 +837,7 @@ function closeExpanded() {
   document.getElementById('zoomControls').classList.remove('visible');
   document.getElementById('leverPanel').style.display = '';
   document.getElementById('filterPanel').style.display = '';
+  document.getElementById('tabSeesawWrap').style.display = '';
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeExpanded(); });
 
