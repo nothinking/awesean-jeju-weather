@@ -27,7 +27,9 @@
 
 ## 사용법
 
-`awesean-jeju-weather.html` 파일을 브라우저에서 열면 바로 사용 가능합니다. 별도 서버나 설치가 필요 없는 단일 HTML 파일입니다.
+`index.html` 파일을 브라우저에서 열면 바로 사용 가능합니다. 별도 서버나 설치가 필요 없는 단일 HTML 파일입니다.
+
+**GitHub Pages**: https://nothinking.github.io/awesean-jeju-weather/
 
 ## 데이터 출처
 
