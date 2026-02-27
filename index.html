@@ -633,6 +633,10 @@ document.querySelectorAll('.tab-seesaw-side').forEach(btn => {
     const cctvEl = document.getElementById('section-cctv');
     weatherEl.classList.toggle('mobile-active', tab === 'weather');
     cctvEl.classList.toggle('mobile-active', tab === 'cctv');
+    const isCctv = tab === 'cctv';
+    document.getElementById('filterPanel').style.display = isCctv ? '' : 'none';
+    document.getElementById('leverPanel').style.display = isCctv ? '' : 'none';
+    document.getElementById('textToggle').style.display = isCctv ? '' : 'none';
     updateHash();
   });
 });
@@ -1186,6 +1190,9 @@ function loadFromHash() {
     tabSeesaw.classList.add('tilt-right');
     document.getElementById('section-weather').classList.add('mobile-active');
     document.getElementById('section-cctv').classList.remove('mobile-active');
+    document.getElementById('filterPanel').style.display = 'none';
+    document.getElementById('leverPanel').style.display = 'none';
+    document.getElementById('textToggle').style.display = 'none';
   }
 }
 
