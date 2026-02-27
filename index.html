@@ -976,11 +976,11 @@ function setJoyKnobPos(region) {
 (function() {
   const area = document.getElementById('joyArea');
   const knob = document.getElementById('joyKnob');
-  let dragging = false, lastRegion = null;
+  let dragging = false, lastRegion = null, hasMoved = false;
   const THRESHOLD = 18;
 
   function detectRegion(dx, dy, dist) {
-    if (dist < THRESHOLD) return null; /* 중앙 = 변경 없음 */
+    if (dist < THRESHOLD) return null;
     const absDx = Math.abs(dx), absDy = Math.abs(dy);
     if (absDy > absDx) return dy < 0 ? '제주 북부지역' : '제주 남부지역';
     return dx < 0 ? '제주 서부지역' : '제주 동부지역';
@@ -999,38 +999,37 @@ function setJoyKnobPos(region) {
     knob.style.top = `calc(50% + ${Math.sin(angle) * clampR}px)`;
 
     const region = detectRegion(dx, dy, dist);
-    if (region && region !== lastRegion) {
-      lastRegion = region;
-      activateFilter(region);
+    if (region) {
+      hasMoved = true;
+      if (region !== lastRegion) {
+        lastRegion = region;
+        activateFilter(region);
+      }
     }
   }
 
   function endDrag() {
     if (!dragging) return;
     dragging = false;
-    lastRegion = null;
     knob.classList.remove('active');
     knob.style.top = '50%'; knob.style.left = '50%';
+    if (!hasMoved) activateFilter('all');
+    lastRegion = null; hasMoved = false;
   }
 
   knob.addEventListener('mousedown', (e) => {
-    dragging = true; lastRegion = currentFilter;
+    dragging = true; lastRegion = currentFilter; hasMoved = false;
     knob.classList.add('active'); e.preventDefault();
   });
   document.addEventListener('mousemove', (e) => { if (dragging) handleMove(e.clientX, e.clientY); });
   document.addEventListener('mouseup', endDrag);
 
   knob.addEventListener('touchstart', (e) => {
-    dragging = true; lastRegion = currentFilter;
+    dragging = true; lastRegion = currentFilter; hasMoved = false;
     knob.classList.add('active'); e.preventDefault();
   });
   document.addEventListener('touchmove', (e) => { if (dragging) handleMove(e.touches[0].clientX, e.touches[0].clientY); });
   document.addEventListener('touchend', endDrag);
-
-  /* Click center = 전체 */
-  knob.addEventListener('click', (e) => {
-    if (!dragging) activateFilter('all');
-  });
 })();
 document.querySelectorAll('.seesaw-side').forEach(btn => {
   btn.addEventListener('click', () => {
