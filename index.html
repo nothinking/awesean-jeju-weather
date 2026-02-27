@@ -117,15 +117,15 @@
   .filter-btn[data-region="제주 동부지역"] { top: 50%; left: 88%; }
   /* Seesaw switch outside ring */
   .seesaw-wrap {
-    position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+    position: absolute; top: -42px; left: 50%; transform: translateX(-50%);
   }
   .seesaw {
-    width: 80px; height: 26px; position: relative;
+    width: 100px; height: 34px; position: relative;
     perspective: 120px;
   }
   .seesaw-board {
     width: 100%; height: 100%; display: flex;
-    border-radius: 13px; overflow: hidden;
+    border-radius: 17px; overflow: hidden;
     background: #1a2a3a; border: 1px solid #2a3a4a;
     transform-style: preserve-3d;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -135,7 +135,7 @@
   .seesaw.tilt-right .seesaw-board { transform: rotateX(-8deg); }
   .seesaw-side {
     flex: 1; display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer; transition: all 0.3s;
+    font-size: 20px; cursor: pointer; transition: all 0.3s;
     background: transparent; border: none; padding: 0;
     color: #556; position: relative;
   }
@@ -303,49 +303,49 @@
   /* ── Fullscreen overlay ── */
   .close-overlay {
     position: fixed; bottom: 20px; right: 16px; z-index: 1001;
-    background: rgba(10,14,23,0.85); color: #f59e0b;
-    border: 1px solid #f59e0b; border-left: 3px solid #fbbf24;
-    padding: 10px 20px; cursor: pointer; font-size: 13px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
-    display: none; transition: all 0.2s;
-    text-shadow: 0 0 8px rgba(245,158,11,0.5);
-    box-shadow: 0 0 15px rgba(245,158,11,0.2);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(10,14,23,0.92); border: 1px solid #2a3a4a;
+    color: #778; font-size: 18px; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    transition: all 0.2s; padding: 0;
   }
-  .close-overlay:hover {
-    background: rgba(245,158,11,0.15); text-shadow: 0 0 15px rgba(245,158,11,0.8);
-    box-shadow: 0 0 25px rgba(245,158,11,0.4);
-  }
-  .close-overlay.visible { display: block; }
+  .close-overlay:hover { color: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,0.3); }
+  .close-overlay.visible { display: flex; }
   .cam-card.expanded .cam-media { cursor: grab; overflow: hidden; aspect-ratio: auto; height: 100%; }
   .cam-card.expanded .cam-media.dragging { cursor: grabbing; }
-  /* ── Zoom controls ── */
+  /* ── Zoom lever ── */
   .zoom-controls {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 1001; display: none; gap: 6px; align-items: center;
-    background: rgba(10,14,23,0.9);
-    border: 1px solid rgba(245,158,11,0.3); border-radius: 0;
-    clip-path: polygon(4% 0, 96% 0, 100% 100%, 0 100%);
-    padding: 8px 20px;
-    box-shadow: 0 0 20px rgba(245,158,11,0.15), inset 0 0 15px rgba(245,158,11,0.03);
+    z-index: 1001; display: none; flex-direction: column; align-items: center; gap: 0;
   }
   .zoom-controls.visible { display: flex; }
-  .zoom-btn {
-    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b;
-    width: 38px; height: 38px; border-radius: 2px; cursor: pointer; font-size: 20px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-    clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+  .zoom-label {
+    font-size: 16px; font-weight: 800; color: #f59e0b; margin-bottom: 4px;
+    text-shadow: 0 0 10px rgba(245,158,11,0.5);
+    letter-spacing: 1px; font-family: 'Courier New', monospace;
   }
-  .zoom-btn:hover {
-    background: rgba(245,158,11,0.2); color: #fcd34d;
+  .zoom-track {
+    width: 120px; height: 44px; background: rgba(13,27,42,0.95);
+    border: 1px solid #1a2a3a; border-radius: 22px;
+    position: relative; touch-action: none;
+    backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 10px;
+  }
+  .zoom-arrow {
+    font-size: 12px; color: #445; pointer-events: none; user-select: none;
+  }
+  .zoom-knob {
+    position: absolute; top: 50%; left: 50%; width: 32px; height: 32px;
+    background: radial-gradient(circle at 40% 35%, #fbbf24, #d97706);
+    border: 2px solid #fcd34d; border-radius: 50%;
+    transform: translate(-50%, -50%); cursor: grab;
     box-shadow: 0 0 12px rgba(245,158,11,0.4);
-    text-shadow: 0 0 8px rgba(245,158,11,0.6);
+    transition: left 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 2;
   }
-  .zoom-level {
-    color: #f59e0b; font-size: 13px; font-weight: 700; min-width: 44px; text-align: center;
-    font-family: 'Courier New', monospace; letter-spacing: 1px;
-    text-shadow: 0 0 6px rgba(245,158,11,0.3);
-  }
+  .zoom-knob.active { transition: none; box-shadow: 0 0 20px rgba(245,158,11,0.7); }
 
   /* ═══════════════════════════════════════
      MOBILE RESPONSIVE (max-width: 768px)
@@ -400,10 +400,12 @@
     .cam-live { font-size: 11px; }
     .cam-source { font-size: 10px; }
 
-    /* ── Fullscreen close button ── */
-    .close-overlay { padding: 10px 20px; font-size: 16px; }
-    .zoom-controls { bottom: 16px; }
-    .zoom-btn { width: 40px; height: 40px; font-size: 20px; }
+    /* ── Fullscreen controls ── */
+    .close-overlay { width: 40px; height: 40px; font-size: 16px; }
+    .zoom-controls { bottom: 12px; }
+    .zoom-track { width: 110px; height: 40px; }
+    .zoom-knob { width: 28px; height: 28px; }
+    .zoom-label { font-size: 14px; }
   }
 
   /* (tablet adjustments now handled by joystick) */
@@ -498,7 +500,7 @@
   </div>
 </div>
 
-<button class="close-overlay" id="closeOverlay" onclick="closeExpanded()">✕ CLOSE</button>
+<button class="close-overlay" id="closeOverlay" onclick="closeExpanded()">✕</button>
 
 <!-- Floating Lever Panel -->
 <div class="lever-panel" id="leverPanel">
@@ -510,10 +512,12 @@
   </div>
 </div>
 <div class="zoom-controls" id="zoomControls">
-  <button class="zoom-btn" onclick="zoomAction('out')">−</button>
-  <span class="zoom-level" id="zoomLevel">1.0x</span>
-  <button class="zoom-btn" onclick="zoomAction('in')">+</button>
-  <button class="zoom-btn" onclick="zoomAction('reset')" style="font-size:11px;width:auto;padding:0 14px;letter-spacing:2px;">RST</button>
+  <span class="zoom-label" id="zoomLabel">1.0x</span>
+  <div class="zoom-track" id="zoomTrack">
+    <span class="zoom-arrow">−</span>
+    <div class="zoom-knob" id="zoomKnob"></div>
+    <span class="zoom-arrow">+</span>
+  </div>
 </div>
 
 <script>
@@ -612,8 +616,12 @@ function renderCameras(gridEl, cameraList) {
       e.preventDefault(); toggleExpand(cam.id);
     });
     // Mobile: double-tap to fullscreen, single-tap to featured
-    let tapTimeout;
+    let tapTimeout, wasMultiTouch = false;
+    card.addEventListener('touchstart', (e) => {
+      if (e.touches.length >= 2) wasMultiTouch = true;
+    });
     card.addEventListener('touchend', (e) => {
+      if (wasMultiTouch) { if (e.touches.length === 0) wasMultiTouch = false; return; }
       if (tapTimeout) { clearTimeout(tapTimeout); tapTimeout = null; e.preventDefault(); toggleExpand(cam.id); }
       else { tapTimeout = setTimeout(() => { tapTimeout = null; }, 300); }
     });
@@ -711,7 +719,8 @@ function applyZoom() {
   if (!el) return;
   el.style.transform = `scale(${zoomScale}) translate(${zoomX}px, ${zoomY}px)`;
   el.style.transformOrigin = 'center center';
-  document.getElementById('zoomLevel').textContent = zoomScale.toFixed(1) + 'x';
+  const zl = document.getElementById('zoomLabel');
+  if (zl) zl.textContent = zoomScale.toFixed(1) + 'x';
 }
 
 function resetZoom() {
@@ -720,6 +729,8 @@ function resetZoom() {
     const el = expandedCard.querySelector('.cam-media img, .cam-media video');
     if (el) { el.style.transform = ''; el.style.transformOrigin = ''; }
   }
+  const zl = document.getElementById('zoomLabel');
+  if (zl) zl.textContent = '1.0x';
 }
 
 function zoomAction(type) {
@@ -728,6 +739,62 @@ function zoomAction(type) {
   else if (type === 'reset') { zoomScale = 1; zoomX = 0; zoomY = 0; }
   applyZoom();
 }
+
+/* ═══ Zoom Spring-back Lever ═══ */
+(function() {
+  const knob = document.getElementById('zoomKnob');
+  const track = document.getElementById('zoomTrack');
+  let dragging = false, triggered = false;
+  const THRESHOLD = 30;
+
+  function snapBack() {
+    knob.classList.remove('active');
+    knob.style.left = '50%';
+  }
+
+  function handleDrag(clientX) {
+    const rect = track.getBoundingClientRect();
+    const center = rect.left + rect.width / 2;
+    const dx = clientX - center;
+    const maxDx = rect.width / 2 - 20;
+    const clampedDx = Math.max(-maxDx, Math.min(maxDx, dx));
+    knob.style.left = `calc(50% + ${clampedDx}px)`;
+
+    if (!triggered && Math.abs(dx) > THRESHOLD) {
+      triggered = true;
+      if (dx < 0) zoomAction('out');
+      else zoomAction('in');
+    }
+  }
+
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false; triggered = false;
+    snapBack();
+  }
+
+  knob.addEventListener('mousedown', (e) => {
+    dragging = true; triggered = false;
+    knob.classList.add('active'); e.preventDefault();
+  });
+  document.addEventListener('mousemove', (e) => { if (dragging) handleDrag(e.clientX); });
+  document.addEventListener('mouseup', endDrag);
+
+  knob.addEventListener('touchstart', (e) => {
+    dragging = true; triggered = false;
+    knob.classList.add('active'); e.preventDefault();
+  });
+  document.addEventListener('touchmove', (e) => { if (dragging) handleDrag(e.touches[0].clientX); });
+  document.addEventListener('touchend', endDrag);
+
+  track.addEventListener('click', (e) => {
+    if (e.target === knob) return;
+    const rect = track.getBoundingClientRect();
+    const center = rect.left + rect.width / 2;
+    if (e.clientX < center) zoomAction('out');
+    else zoomAction('in');
+  });
+})();
 
 function toggleExpand(camId) {
   const card = document.getElementById('cam-' + camId);
