@@ -798,12 +798,31 @@ function zoomAction(type) {
 (function() {
   const knob = document.getElementById('zoomKnob');
   const track = document.getElementById('zoomTrack');
-  let dragging = false, triggered = false;
+  let dragging = false, repeatTimer = null, currentDir = null, stepped = false;
   const THRESHOLD = 30;
+  const HOLD_DELAY = 350;
+  const REPEAT_INTERVAL = 350;
 
   function snapBack() {
     knob.classList.remove('active');
     knob.style.left = '50%';
+  }
+
+  function stopRepeat() {
+    if (repeatTimer) { clearTimeout(repeatTimer); repeatTimer = null; }
+    currentDir = null;
+  }
+
+  function startHold(dir) {
+    if (currentDir === dir) return;
+    stopRepeat();
+    currentDir = dir;
+    stepped = false;
+    repeatTimer = setTimeout(function tick() {
+      stepped = true;
+      zoomAction(dir);
+      repeatTimer = setTimeout(tick, REPEAT_INTERVAL);
+    }, HOLD_DELAY);
   }
 
   function handleDrag(clientX) {
@@ -814,28 +833,33 @@ function zoomAction(type) {
     const clampedDx = Math.max(-maxDx, Math.min(maxDx, dx));
     knob.style.left = `calc(50% + ${clampedDx}px)`;
 
-    if (!triggered && Math.abs(dx) > THRESHOLD) {
-      triggered = true;
-      if (dx < 0) zoomAction('out');
-      else zoomAction('in');
+    if (Math.abs(dx) > THRESHOLD) {
+      const dir = dx < 0 ? 'out' : 'in';
+      startHold(dir);
+    } else {
+      stopRepeat();
     }
   }
 
   function endDrag() {
     if (!dragging) return;
-    dragging = false; triggered = false;
+    dragging = false;
+    const dir = currentDir;
+    const didStep = stepped;
+    stopRepeat();
     snapBack();
+    if (dir && !didStep) zoomAction(dir);
   }
 
   knob.addEventListener('mousedown', (e) => {
-    dragging = true; triggered = false;
+    dragging = true;
     knob.classList.add('active'); e.preventDefault();
   });
   document.addEventListener('mousemove', (e) => { if (dragging) handleDrag(e.clientX); });
   document.addEventListener('mouseup', endDrag);
 
   knob.addEventListener('touchstart', (e) => {
-    dragging = true; triggered = false;
+    dragging = true;
     knob.classList.add('active'); e.preventDefault();
   });
   document.addEventListener('touchmove', (e) => { if (dragging) handleDrag(e.touches[0].clientX); });
@@ -1064,7 +1088,7 @@ document.getElementById('textToggle').addEventListener('click', () => {
 
 /* ═══ Spring-back Lever Control ═══ */
 const savedCols = parseInt(localStorage.getItem('columns'));
-let currentCols = savedCols >= 1 && savedCols <= 6 ? savedCols : (window.innerWidth <= 768 ? 2 : 4);
+let currentCols = savedCols >= 1 && savedCols <= 6 ? savedCols : (window.innerWidth <= 768 ? 1 : 4);
 const MIN_COLS = 1, MAX_COLS = 6;
 
 function setColumns(n) {
