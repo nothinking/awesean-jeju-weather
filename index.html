@@ -321,6 +321,8 @@
     display: flex; justify-content: space-between; align-items: center;
   }
   .cam-name { font-size: var(--cam-name-size, 12px); font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); transition: font-size 0.2s; }
+  .cam-link { color: #9ca3af; text-decoration: none; margin-left: 4px; font-size: 0.85em; opacity: 0.6; transition: opacity 0.2s; }
+  .cam-link:hover { opacity: 1; color: #60a5fa; }
   .cam-region {
     font-size: var(--cam-region-size, 10px); padding: 2px 8px; border-radius: 10px; transition: font-size 0.2s;
   }
@@ -596,7 +598,27 @@ const cameras = [
   { id:11, name:"왕관릉", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv02.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv02.stream_360p/playlist.m3u8", source:"한라산국립공원" },
   { id:12, name:"윗세오름", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv03.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv03.stream_360p/playlist.m3u8", source:"한라산국립공원" },
   { id:13, name:"어승생악", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv04.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv04.stream_360p/playlist.m3u8", source:"한라산국립공원" },
-  { id:14, name:"1100도로", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv05.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv05.stream_360p/playlist.m3u8", source:"한라산국립공원" }
+  { id:14, name:"1100도로", region:"한라산", type:"hls", url:"http://119.65.216.155:1935/live/cctv05.stream_360p/playlist.m3u8", hls:"https://hallacctv.kr/live/cctv05.stream_360p/playlist.m3u8", source:"한라산국립공원" },
+  /* ── 재난안전대책본부 (추가) ── */
+  { id:27, name:"구좌읍사무소", region:"제주 동부지역", type:"hls", url:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100002/0/0", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100002/0/0", source:"재난안전대책본부" },
+  { id:28, name:"옹포항", region:"제주 북부지역", type:"hls", url:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100005/0/0", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100005/0/0", source:"재난안전대책본부" },
+  { id:29, name:"남원어촌계", region:"제주 동부지역", type:"hls", url:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100006/0/0", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100006/0/0", source:"재난안전대책본부" },
+  { id:30, name:"서귀항", region:"제주 남부지역", type:"hls", url:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100009/0/0", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100009/0/0", source:"재난안전대책본부" },
+  { id:31, name:"평화교", region:"제주 남부지역", type:"hls", url:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100013/0/0", hls:"http://59.8.86.94:8080/media/api/v1/hls/vurix/192871/100013/0/0", source:"재난안전대책본부" },
+  /* ── 적설감시 ── */
+  { id:32, name:"평화로입구", region:"한라산", type:"hls", url:"http://59.8.86.15:1935/live/28.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/28.stream/playlist.m3u8", source:"적설감시" },
+  { id:33, name:"해병9여단", region:"한라산", type:"hls", url:"http://59.8.86.15:1935/live/30.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/30.stream/playlist.m3u8", source:"적설감시" },
+  { id:34, name:"산천단입구", region:"한라산", type:"hls", url:"http://59.8.86.15:1935/live/32.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/32.stream/playlist.m3u8", source:"적설감시" },
+  { id:35, name:"대천동사거리", region:"한라산", type:"hls", url:"http://59.8.86.15:1935/live/34.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/34.stream/playlist.m3u8", source:"적설감시" },
+  { id:36, name:"비자림", region:"제주 동부지역", type:"hls", url:"http://59.8.86.15:1935/live/36.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/36.stream/playlist.m3u8", source:"적설감시" },
+  { id:37, name:"삼다수공장", region:"한라산", type:"hls", url:"http://59.8.86.15:1935/live/38.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/38.stream/playlist.m3u8", source:"적설감시" },
+  { id:38, name:"금악이시돌목장", region:"제주 서부지역", type:"hls", url:"http://59.8.86.15:1935/live/40.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/40.stream/playlist.m3u8", source:"적설감시" },
+  { id:39, name:"모슬포예비군훈련장입구", region:"제주 서부지역", type:"hls", url:"http://59.8.86.15:1935/live/42.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/42.stream/playlist.m3u8", source:"적설감시" },
+  { id:40, name:"영실", region:"한라산", type:"hls", url:"http://59.8.86.15:1935/live/44.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/44.stream/playlist.m3u8", source:"적설감시" },
+  { id:41, name:"토평감귤유통센터앞", region:"제주 남부지역", type:"hls", url:"http://59.8.86.15:1935/live/46.stream/playlist.m3u8", hls:"http://59.8.86.15:1935/live/46.stream/playlist.m3u8", source:"적설감시" },
+  /* ── 기타 (추가) ── */
+  { id:42, name:"덕흥사앞", region:"제주 북부지역", type:"hls", url:"http://211.114.96.121:1935/jejusi8/11-49.stream/playlist.m3u8", hls:"http://211.114.96.121:1935/jejusi8/11-49.stream/playlist.m3u8", source:"도로감시" },
+  { id:43, name:"마라도", region:"제주 서부지역", type:"hls", url:"https://cctvsec.ktict.co.kr:8082/livekbs/9982/chunks.m3u8", hls:"https://cctvsec.ktict.co.kr:8082/livekbs/9982/chunks.m3u8", source:"KBS" }
 ];
 
 const regionColors = {
@@ -642,6 +664,15 @@ document.querySelectorAll('.tab-seesaw-side').forEach(btn => {
 });
 
 /* ═══ Render CCTV into a grid container ═══ */
+function getCamLink(cam) {
+  if (cam.id >= 1 && cam.id <= 16) return 'http://www.nowjejuplus.co.kr/cctv/' + cam.id;
+  if (cam.source === '한라산국립공원') return 'https://hallacctv.kr';
+  if (cam.source === '재난안전대책본부' && cam.id >= 27) return 'http://bangjae.jeju.go.kr/realtimeinfor/cctv.htm';
+  if (cam.source === '적설감시') return 'http://bangjae.jeju.go.kr/realtimeinfor/cctv/snow.htm';
+  if (cam.id === 42) return 'http://cctv.trendworld.kr/cctv/deokeungsa.php';
+  return null;
+}
+
 function renderCameras(gridEl, cameraList) {
   gridEl.innerHTML = '';
   cameraList.forEach(cam => {
@@ -649,9 +680,11 @@ function renderCameras(gridEl, cameraList) {
     card.className = 'cam-card';
     card.id = 'cam-' + cam.id;
     const color = regionColors[cam.region] || '#f59e0b';
+    const camLink = getCamLink(cam);
+    const linkHtml = camLink ? `<a href="${camLink}" target="_blank" rel="noopener" class="cam-link" title="원본 페이지" onclick="event.stopPropagation()">&#x2197;</a>` : '';
     card.innerHTML = `
       <div class="cam-label">
-        <span class="cam-name">${cam.name}</span>
+        <span class="cam-name">${cam.name}${linkHtml}</span>
         <span class="cam-region" style="color:${color};background:${color}22;border:1px solid ${color}44">${cam.region.replace(/제주\s*/,'').replace(/지역/,'')}</span>
       </div>
       <div class="cam-media" id="media-${cam.id}">
